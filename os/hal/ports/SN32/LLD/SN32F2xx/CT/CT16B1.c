@@ -158,6 +158,7 @@ void	CT16B1_IRQHandler(void)
 			SN_CT16B1->IC = mskCT16_MR3IC;	//Clear MR3 match interrupt status
 		}
 	}
+#if (SN32_CT16B1_CHANNELS > 4)
 	//MR4
 	if (SN_CT16B1->MCTRL_b.MR4IE)				//Check if MR4 IE enables?
 	{
@@ -230,6 +231,7 @@ void	CT16B1_IRQHandler(void)
 			SN_CT16B1->IC = mskCT16_MR11IC;	//Clear MR11 match interrupt status
 		}
 	}
+#if (SN32_CT16B1_CHANNELS > 12)
 	//MR12
 	if (SN_CT16B1->MCTRL2_b.MR12IE)				//Check if MR12 IE enables?
 	{
@@ -338,7 +340,7 @@ void	CT16B1_IRQHandler(void)
 			SN_CT16B1->IC = mskCT16_MR23IC;	//Clear MR23 match interrupt status
 		}
 	}
-#if SN32_CT16B1_CHANNELS > 23
+#if (SN32_CT16B1_CHANNELS > 23)
 	//MR24
 	if (SN_CT16B1->MCTRL3_b.MR24IE)				//Check if MR24 IE enables?
 	{
@@ -348,6 +350,8 @@ void	CT16B1_IRQHandler(void)
 			SN_CT16B1->IC = mskCT16_MR24IC;	//Clear MR24 match interrupt status
 		}
 	}
+#endif
+#endif
 #endif
 }
 
