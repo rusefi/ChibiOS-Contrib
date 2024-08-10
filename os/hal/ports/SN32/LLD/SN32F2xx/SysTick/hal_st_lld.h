@@ -170,7 +170,7 @@ static inline void st_lld_start_alarm(systime_t abstime) {
 
   /* Save the alarm time in a timer register.  This is needed only to make
    * st_lld_get_alarm() work. */
-  SN32_ST_TIM->MR0 = (uint32_t)abstime;
+  SN32_ST_TIM->MR[0] = (uint32_t)abstime;
 }
 
 /**
@@ -203,7 +203,7 @@ static inline void st_lld_set_alarm(systime_t abstime) {
  * @notapi
  */
 static inline systime_t st_lld_get_alarm(void) {
-  return (systime_t)(SN32_ST_TIM->MR0 & 0x0000FFFF);
+  return (systime_t)(SN32_ST_TIM->MR[0] & 0x0000FFFF);
 }
 
 /**

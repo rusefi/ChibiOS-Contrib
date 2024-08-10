@@ -36,7 +36,8 @@
 /**
  * @brief   Number of PWM channels per PWM driver.
  */
-#define PWM_CHANNELS                 SN32_CT16B1_CHANNELS
+#define PWM_CHANNELS                 (SN32_CT16B1_CHANNELS - 1)
+#define MCTRL_INDEX                  (PWM_CHANNELS / 10)
 
 /** @} */
 
@@ -234,13 +235,8 @@ struct PWMDriver {
  *
  * @notapi
  */
-#if PWM_CHANNELS > 23
 #define pwm_lld_change_period(pwmp, period)                                 \
-  ((pwmp)->ct->MR24 = ((period) - 1))
-#else
-#define pwm_lld_change_period(pwmp, period)                                 \
-  ((pwmp)->ct->MR23 = ((period) - 1))
-#endif
+  ((pwmp)->ct->MR[PWM_CHANNELS] = ((period) - 1))
 
 /**
  * @brief   Changes the timer counter of the PWM peripheral.

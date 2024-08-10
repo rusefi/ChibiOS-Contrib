@@ -232,7 +232,7 @@ void gpt_lld_stop(GPTDriver *gptp) {
  */
 void gpt_lld_start_timer(GPTDriver *gptp, gptcnt_t interval) {
 
-  gptp->ct->MR0 = (uint32_t)(interval - 1U);  /* Time constant.           */
+  gptp->ct->MR[0] = (uint32_t)(interval - 1U);  /* Time constant.           */
 #if SN32_GPT_USE_CT16B0
       if (&GPTD1 == gptp) {
         CT16B0_ResetTimer();                  /* Counter reset to zero.   */
@@ -245,7 +245,7 @@ void gpt_lld_start_timer(GPTDriver *gptp, gptcnt_t interval) {
 #endif
   gptp->ct->IC      &= 0x1FFFFFF;             /* Clear pending IRQs.      */
   if (NULL != gptp->config->callback)
-    gptp->ct->MCTRL |= mskCT16_MR0IE_EN;
+    gptp->ct->MCTRL |= mskCT16_MRnIE_EN(0);
   gptp->ct->TMRCTRL |= mskCT16_CEN_EN;
 }
 
@@ -260,7 +260,7 @@ void gpt_lld_stop_timer(GPTDriver *gptp) {
 
   gptp->ct->TMRCTRL = CT16_CEN_DIS;            /* Initially stopped.       */
   gptp->ct->IC      &= 0x1FFFFFF;              /* Clear pending IRQs.      */
-  gptp->ct->MCTRL &= ~mskCT16_MR0IE_EN;        /* Disable the interrupt    */
+  gptp->ct->MCTRL &= ~mskCT16_MRnIE_EN(0);     /* Disable the interrupt    */
 
 }
 
@@ -277,11 +277,11 @@ void gpt_lld_stop_timer(GPTDriver *gptp) {
  */
 void gpt_lld_polled_delay(GPTDriver *gptp, gptcnt_t interval) {
 
-  gptp->ct->MR0 = (uint32_t)(interval - 1U);   /* Time constant.           */
-  gptp->ct->MCTRL = (mskCT16_MR0IE_EN | mskCT16_MR0STOP_EN);
+  gptp->ct->MR[0] = (uint32_t)(interval - 1U);   /* Time constant.           */
+  gptp->ct->MCTRL = (mskCT16_MRnIE_EN(0) | mskCT16_MRnSTOP_EN(0));
   gptp->ct->IC &= 0x1FFFFFF;                   /* Clear pending IRQs.      */
   gptp->ct->TMRCTRL |= mskCT16_CEN_EN;
-  while ((gptp->ct->RIS & mskCT16_MR0IF)!= 0)
+  while ((gptp->ct->RIS & mskCT16_MRnIF(0))!= 0)
     ;
   gptp->ct->IC &= 0x1FFFFFF;                   /* Clear pending IRQs.      */
 }
@@ -298,7 +298,7 @@ void gpt_lld_serve_interrupt(GPTDriver *gptp) {
 
   ris  = gptp->ct->RIS;
   gptp->ct->IC = ris;
-  if ((ris & mskCT16_MR0IF) != 0)
+  if ((ris & mskCT16_MRnIF(0)) != 0)
     _gpt_isr_invoke_cb(gptp);
 }
 
