@@ -88,7 +88,7 @@
 */
 
 #ifndef SYS0_CLKCFG_VAL
-#define SYS0_CLKCFG_VAL		0
+#define SYS0_CLKCFG_VAL		4
 #endif
 #ifndef PLL_ENABLE
 #define PLL_ENABLE				1
