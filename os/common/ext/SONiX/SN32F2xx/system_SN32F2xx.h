@@ -56,7 +56,7 @@ extern void SystemInit (void);
  *         retrieved from cpu registers.
  */
 extern void SystemCoreClockUpdate (void);
-#if (defined(SN32F240B) || defined(SN32F280) || defined(SN32F290))
+#if (defined(SN32F240B) || defined(SN32F240C) || defined(SN32F280) || defined(SN32F290))
 /**
  * Initialize the Flash controller
  *
@@ -75,7 +75,7 @@ extern void FlashClockUpdate (void);
  * @brief  Special init required for slow SystemCoreClock
  */
 extern void SlowModeSwitch (void);
-#endif /* defined(SN32F240B) || defined(SN32F280) || defined(SN32F290) */
+#endif /* defined(SN32F240B) || defined(SN32F240C) || defined(SN32F280) || defined(SN32F290) */
 
 #ifdef __cplusplus
 }
