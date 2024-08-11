@@ -50,6 +50,9 @@ static void initgpio(ioportid_t gpiop, const sn32_gpio_setup_t *config) {
     gpiop->DATA  = config->data;
     gpiop->MODE  = config->mode;
     gpiop->CFG   = config->cfg;
+#if (PAL_IOPORTS_WIDTH > 16U)
+    gpiop->CFG1   = config->cfg1;
+#endif
 }
 
 #if (PAL_USE_WAIT == TRUE) || (PAL_USE_CALLBACKS == TRUE)
