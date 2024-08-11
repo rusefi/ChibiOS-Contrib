@@ -4,6 +4,10 @@
 #ifndef __USBHW_H__
 #define __USBHW_H__
 
+//Enable or Disable
+#define ENABLE		0x1
+#define DISABLE		0x0
+
 //** USB Remote Wakeup I/O Define
 //** USB Remote Wakeup I/O Port Define, Default P1.5
 #define	REMOTE_WAKEUP_IO_P0			DISABLE

@@ -4,10 +4,12 @@
 
 /*_____ I N C L U D E S ____________________________________________________*/
 #include <SN32F240.h>
-#include <SN32F200_Def.h>
 
 
 /*_____ D E F I N I T I O N S ______________________________________________*/
+#define	POLLING_METHOD		0x0
+#define	INTERRUPT_METHOD	0x1
+
 #define	SYSTICK_IRQ		POLLING_METHOD			//INTERRUPT_METHOD:	Enable SysTick timer and interrupt
 																					//POLLING_METHOD: 	Enable SysTick timer ONLY
 
