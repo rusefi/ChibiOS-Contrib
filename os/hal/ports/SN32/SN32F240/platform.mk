@@ -20,8 +20,8 @@ HALCONF := $(strip $(shell cat $(CONFDIR)/halconf.h $(CONFDIR)/halconf_community
 endif
 
 # Drivers compatible with the platform.
-include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F24x/GPIO/driver.mk
-include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F24x/USB/driver.mk
+include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F2xx/GPIO/driver.mk
+include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F2xx/USB/driver.mk
 include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F24x/CT/driver.mk
 
 # Shared variables
