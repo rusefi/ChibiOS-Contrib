@@ -100,6 +100,30 @@
 }
 
 /** @} */
+/**
+ * @name    Dummy GPIO peripherals specific SYS1 operations
+ * @{
+ */
+/**
+ * @brief   Enables the GPIO peripherals clock.
+ *
+ * @api
+ */
+#define sys1EnableP0()
+#define sys1EnableP1()
+#define sys1EnableP2()
+#define sys1EnableP3()
+/**
+ * @brief   Disables the GPIO peripherals clock.
+ *
+ * @api
+ */
+#define sys1DisableP0()
+#define sys1DisableP1()
+#define sys1DisableP2()
+#define sys1DisableP3()
+
+/** @} */
 
 /**
  * @name    OPA peripherals specific SYS1 operations
