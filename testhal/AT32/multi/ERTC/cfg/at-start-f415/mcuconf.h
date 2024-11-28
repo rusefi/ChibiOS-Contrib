@@ -216,9 +216,13 @@
 #define AT32_UART_USE_USART1                FALSE
 #define AT32_UART_USE_USART2                FALSE
 #define AT32_UART_USE_USART3                FALSE
+#define AT32_UART_USE_UART4                 FALSE
+#define AT32_UART_USE_UART5                 FALSE
 #define AT32_UART_USART1_DMA_PRIORITY       0
 #define AT32_UART_USART2_DMA_PRIORITY       0
 #define AT32_UART_USART3_DMA_PRIORITY       0
+#define AT32_UART_UART4_DMA_PRIORITY        0
+#define AT32_UART_UART5_DMA_PRIORITY        0
 #define AT32_UART_DMA_ERROR_HOOK(uartp)     osalSysHalt("DMA failure")
 
 /*

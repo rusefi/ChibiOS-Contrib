@@ -62,8 +62,8 @@ I2CConfig i2ccfg = {
 /*===========================================================================*/
 
 void portab_setup(void) {
-  palSetLineMode(PAL_LINE(GPIOB, 6U), PAL_MODE_AT32_ALTERNATE_OPENDRAIN);
-  palSetLineMode(PAL_LINE(GPIOB, 7U), PAL_MODE_AT32_ALTERNATE_OPENDRAIN);
+  palSetLineMode(PAL_LINE(GPIOB, 6U), PAL_MODE_AT32_MUX_OPENDRAIN);
+  palSetLineMode(PAL_LINE(GPIOB, 7U), PAL_MODE_AT32_MUX_OPENDRAIN);
 }
 
 /** @} */
