@@ -92,7 +92,7 @@ ICUConfig icucfg = {
 /*===========================================================================*/
 
 void portab_setup(void) {
-
+  palSetLineMode(LINE_ARD_D7, PAL_MODE_AT32_MUX_PUSHPULL);
 }
 
 /** @} */
