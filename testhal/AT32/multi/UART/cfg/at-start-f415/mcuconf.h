@@ -114,6 +114,13 @@
 #define AT32_CAN_CAN1_IRQ_PRIORITY          11
 
 /*
+ * CRC driver system settings.
+ */
+#define AT32_CRC_USE_CRC1                   FALSE
+#define AT32_CRC_CRC1_DMA_PRIORITY          2
+#define AT32_CRC_CRC1_IRQ_PRIORITY          1
+
+/*
  * DMA driver system settings.
  */
 #define AT32_DMA_USE_DMAMUX                 FALSE
@@ -136,10 +143,10 @@
 #define AT32_I2C_USE_I2C1                   FALSE
 #define AT32_I2C_USE_I2C2                   FALSE
 #define AT32_I2C_BUSY_TIMEOUT               50
-#define AT32_I2C_I2C1_IRQ_PRIORITY          5
-#define AT32_I2C_I2C2_IRQ_PRIORITY          5
 #define AT32_I2C_I2C1_DMA_PRIORITY          3
 #define AT32_I2C_I2C2_DMA_PRIORITY          3
+#define AT32_I2C_I2C1_IRQ_PRIORITY          5
+#define AT32_I2C_I2C2_IRQ_PRIORITY          5
 #define AT32_I2C_DMA_ERROR_HOOK(i2cp)       osalSysHalt("DMA failure")
 
 /*
