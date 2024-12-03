@@ -58,6 +58,8 @@
 
 #endif
 
+#define IRQ_RETRY_MASK (GINTSTS_NPTXFEMP | GINTSTS_PTXFEMP | GINTSTS_RXFLVL)
+
 /*===========================================================================*/
 /* Driver exported variables.                                                */
 /*===========================================================================*/
@@ -173,6 +175,20 @@ static void otg_disable_ep(USBDriver *usbp) {
   otgp->DAINTMSK = DAINTMSK_OUTEPTMSK(0) | DAINTMSK_INEPTMSK(0);
 }
 
+static void otg_enable_ep(USBDriver *usbp) {
+  at32_otg_t *otgp = usbp->otg;
+  unsigned i;
+
+  for (i = 0; i <= usbp->otgparams->num_endpoints; i++) {
+    if (usbp->epc[i]->out_state != NULL) {
+      otgp->DAINTMSK |= DAINTMSK_OUTEPTMSK(i);
+    }
+    if (usbp->epc[i]->in_state != NULL) {
+      otgp->DAINTMSK |= DAINTMSK_INEPTMSK(i);
+    }
+  }
+}
+
 static void otg_rxfifo_flush(USBDriver *usbp) {
   at32_otg_t *otgp = usbp->otg;
 
@@ -285,30 +301,36 @@ static void otg_fifo_read_to_buffer(volatile uint32_t *fifop,
  * @notapi
  */
 static void otg_rxfifo_handler(USBDriver *usbp) {
-  uint32_t sts, cnt, ep;
+  uint32_t sts, ep;
+  size_t n, max;
 
   /* Popping the event word out of the RX FIFO.*/
   sts = usbp->otg->GRXSTSP;
 
   /* Event details.*/
-  cnt = (sts & GRXSTSP_BCNT_MASK) >> GRXSTSP_BCNT_OFF;
-  ep  = (sts & GRXSTSP_EPTNUM_MASK) >> GRXSTSP_EPTNUM_OFF;
+  n  = (size_t)((sts & GRXSTSP_BCNT_MASK) >> GRXSTSP_BCNT_OFF);
+  ep = (sts & GRXSTSP_EPTNUM_MASK) >> GRXSTSP_EPTNUM_OFF;
 
   switch (sts & GRXSTSP_PKTSTS_MASK) {
   case GRXSTSP_SETUP_DATA:
     otg_fifo_read_to_buffer(usbp->otg->FIFO[0], usbp->epc[ep]->setup_buf,
-                            cnt, 8);
+                            n, 8);
     break;
   case GRXSTSP_SETUP_COMP:
     break;
   case GRXSTSP_OUT_DATA:
+    max = usbp->epc[ep]->out_state->rxsize - usbp->epc[ep]->out_state->rxcnt;
     otg_fifo_read_to_buffer(usbp->otg->FIFO[0],
                             usbp->epc[ep]->out_state->rxbuf,
-                            cnt,
-                            usbp->epc[ep]->out_state->rxsize -
-                            usbp->epc[ep]->out_state->rxcnt);
-    usbp->epc[ep]->out_state->rxbuf += cnt;
-    usbp->epc[ep]->out_state->rxcnt += cnt;
+                            n, max);
+    if (n < max) {
+      usbp->epc[ep]->out_state->rxbuf += n;
+      usbp->epc[ep]->out_state->rxcnt += n;
+    }
+    else {
+      usbp->epc[ep]->out_state->rxbuf += max;
+      usbp->epc[ep]->out_state->rxcnt += max;
+    }
     break;
   case GRXSTSP_OUT_COMP:
     break;
@@ -533,6 +555,9 @@ static void otg_isoc_out_failed_handler(USBDriver *usbp) {
 static void usb_lld_serve_interrupt(USBDriver *usbp) {
   at32_otg_t *otgp = usbp->otg;
   uint32_t sts, src;
+  unsigned retry = 64U;
+
+irq_retry:
 
   sts  = otgp->GINTSTS;
   sts &= otgp->GINTMSK;
@@ -555,6 +580,9 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
       /* Set to zero to un-gate the USB core clocks.*/
       otgp->PCGCCTL &= ~PCGCCTL_STOPPCLK;
     }
+
+    /* Re-enable endpoint IRQs if they have been disabled by suspend before.*/
+    otg_enable_ep(usbp);
 
     /* Clear the Remote Wake-up Signaling.*/
     otgp->DCTL &= ~DCTL_RWKUPSIG;
@@ -598,6 +626,10 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
         /* Set to zero to un-gate the USB core clocks.*/
         otgp->PCGCCTL &= ~PCGCCTL_STOPPCLK;
       }
+
+      /* Re-enable endpoint irqs if they have been disabled by suspend before. */
+      otg_enable_ep(usbp);
+
       _usb_wakeup(usbp);
     }
 
@@ -612,12 +644,6 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
   /* Isochronous OUT failed handling */
   if (sts & GINTSTS_INCOMPISOOUT) {
     otg_isoc_out_failed_handler(usbp);
-  }
-
-  /* Performing the whole FIFO emptying in the ISR, it is advised to keep
-     this IRQ at a very low priority level.*/
-  if ((sts & GINTSTS_RXFLVL) != 0U) {
-    otg_rxfifo_handler(usbp);
   }
 
   /* IN/OUT endpoints event handling.*/
@@ -682,6 +708,15 @@ static void usb_lld_serve_interrupt(USBDriver *usbp) {
       otg_epin_handler(usbp, 8);
 #endif
   }
+
+  /* Performing the whole FIFO emptying in the STS, it is advised to keep
+     this IRQ at a very low priority level.*/
+  if ((sts & GINTSTS_RXFLVL) != 0U) {
+    otg_rxfifo_handler(usbp);
+  }
+
+  if ((sts & IRQ_RETRY_MASK) && (--retry > 0U))
+    goto irq_retry;
 }
 
 /*===========================================================================*/
@@ -1129,7 +1164,7 @@ void usb_lld_start_out(USBDriver *usbp, usbep_t ep) {
   /* Transfer initialization.*/
   osp->totsize = osp->rxsize;
   if ((ep == 0) && (osp->rxsize > EP0_MAX_OUTSIZE))
-      osp->rxsize = EP0_MAX_OUTSIZE;
+    osp->rxsize = EP0_MAX_OUTSIZE;
 
   /* Transaction size is rounded to a multiple of packet size because the
      following requirement in the RM:

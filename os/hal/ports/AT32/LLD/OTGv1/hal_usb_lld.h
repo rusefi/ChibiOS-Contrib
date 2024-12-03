@@ -539,6 +539,9 @@ struct USBDriver {
  */
 #define usb_lld_wakeup_host(usbp)                                           \
   do {                                                                      \
+    /* Turnings clocks back on (may be required if coming out of suspend
+       mode).*/                                                             \
+    (usbp)->otg->PCGCCTL &= ~PCGCCTL_STOPPCLK;                              \
     (usbp)->otg->DCTL |= DCTL_RWKUPSIG;                                     \
     /* remote wakeup doesn't trigger the wakeup interrupt, therefore
        we use the SOF interrupt to detect resume of the bus.*/              \
