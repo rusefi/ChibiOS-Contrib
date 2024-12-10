@@ -2,6 +2,7 @@
     ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
     ChibiOS - Copyright (C) 2023..2024 HorrorTroll
     ChibiOS - Copyright (C) 2023..2024 Zhaqian
+    ChibiOS - Copyright (C) 2023..2024 Maxjta
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -49,13 +50,8 @@
 #endif
 
 #elif AT32_OTG_STEPPING == 2
-#if defined(BOARD_OTG_VBUSIG_LPM)
-#define GCCFG_INIT_VALUE        (GCCFG_VBUSIG | GCCFG_LP_MODE |             \
-                                 GCCFG_PWRDOWN)
-#elif defined(BOARD_OTG_VBUSIG)
+#if defined(BOARD_OTG_VBUSIG)
 #define GCCFG_INIT_VALUE        (GCCFG_VBUSIG | GCCFG_PWRDOWN)
-#elif defined(BOARD_OTG_LPM)
-#define GCCFG_INIT_VALUE        (GCCFG_LP_MODE | GCCFG_PWRDOWN)
 #else
 #define GCCFG_INIT_VALUE        GCCFG_PWRDOWN
 #endif
@@ -788,34 +784,18 @@ void usb_lld_start(USBDriver *usbp) {
 
 #if AT32_USB_USE_OTG2
     if (&USBD2 == usbp) {
+
+#if AT32_OTG2_SUPPORTS_HS
       /* OTG HS clock enable and reset.*/
       crmEnableOTG_HS(true);
       crmResetOTG_HS();
-
-      /* ULPI clock is managed depending on the presence of an external
-         PHY.*/
-#if defined(BOARD_OTG2_USES_ULPI)
-      crmEnableOTG_HSULPI(true);
-#else
-      /* Workaround for the problem described here:
-         http://forum.chibios.org/phpbb/viewtopic.php?f=16&t=1798.*/
-      crmDisableOTG_HSULPI();
-#endif
 
       /* Enables IRQ vector.*/
       nvicEnableVector(AT32_OTG2_NUMBER, AT32_USB_OTG2_IRQ_PRIORITY);
 
       /* - Forced device mode.
-         - USB turn-around time = USBTRDTIM_VALUE_HS or USBTRDTIM_VALUE_FS.*/
-#if defined(BOARD_OTG2_USES_ULPI)
-      /* High speed ULPI PHY.*/
+               - USB turn-around time = USBTRDTIM_VALUE_HS or USBTRDTIM_VALUE_FS.*/
       otgp->GUSBCFG = GUSBCFG_FDEVMODE | GUSBCFG_USBTRDTIM(USBTRDTIM_VALUE_HS);
-#else
-      otgp->GUSBCFG = GUSBCFG_FDEVMODE | GUSBCFG_USBTRDTIM(USBTRDTIM_VALUE_FS) |
-                      GUSBCFG_PHYSEL;
-#endif
-
-#if defined(BOARD_OTG2_USES_ULPI)
 #if AT32_USE_USB_OTG2_HS
       /* USB 2.0 High Speed PHY in HS mode.*/
       otgp->DCFG = 0x02200000 | DCFG_DEVSPD_HS;
@@ -823,7 +803,20 @@ void usb_lld_start(USBDriver *usbp) {
       /* USB 2.0 High Speed PHY in FS mode.*/
       otgp->DCFG = 0x02200000 | DCFG_DEVSPD_HS_FS;
 #endif
+
 #else
+      /* OTG FS clock enable and reset.*/
+      crmEnableOTG_FS2(true);
+      crmResetOTG_FS2();
+
+      /* Enables IRQ vector.*/
+      nvicEnableVector(AT32_OTG2_NUMBER, AT32_USB_OTG2_IRQ_PRIORITY);
+
+      /* - Forced device mode.
+                     - USB turn-around time = USBTRDTIM_VALUE_HS or USBTRDTIM_VALUE_FS.*/
+      otgp->GUSBCFG = GUSBCFG_FDEVMODE | GUSBCFG_USBTRDTIM(USBTRDTIM_VALUE_FS) |
+                      GUSBCFG_PHYSEL;
+
       /* 48MHz 1.1 PHY.*/
       otgp->DCFG = 0x02200000 | DCFG_DEVSPD_FS11;
 #endif
@@ -833,21 +826,7 @@ void usb_lld_start(USBDriver *usbp) {
     /* PHY enabled.*/
     otgp->PCGCCTL = 0;
 
-#if defined(BOARD_OTG2_USES_ULPI)
-#if AT32_USB_USE_OTG1
-    if (&USBD1 == usbp) {
-      otgp->GCCFG = GCCFG_INIT_VALUE;
-    }
-#endif
-
-#if AT32_USB_USE_OTG2
-    if (&USBD2 == usbp) {
-      otgp->GCCFG = 0;
-    }
-#endif
-#else
     otgp->GCCFG = GCCFG_INIT_VALUE;
-#endif
 
     /* Soft core reset.*/
     otg_core_reset(usbp);
@@ -913,9 +892,6 @@ void usb_lld_stop(USBDriver *usbp) {
     if (&USBD2 == usbp) {
       nvicDisableVector(AT32_OTG2_NUMBER);
       crmDisableOTG_HS();
-#if defined(BOARD_OTG2_USES_ULPI)
-      crmDisableOTG_HSULPI();
-#endif
     }
 #endif
   }
