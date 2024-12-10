@@ -51,6 +51,11 @@ static int flag __attribute__((section(".flag"))) __attribute__((__used__)) = 0x
  *          and before any other initialization.
  */
 void __early_init(void) {
+  SN_FLASH->LPCTRL = 0x5AFA0031; //24 <= 48Mhz
+  SN_SYS1->AHBCLKEN_b.LCDCLKEN =1;
+  SN_SYS1->AHBCLKEN_b.WDTCLKEN =1;
+  SN_LCD->CTRL_b.VLCD=1;
+  SN_SYS1->AHBCLKEN_b.LCDCLKEN =0;
   sn32_clock_init();
 }
 
