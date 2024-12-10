@@ -51,14 +51,6 @@
  * @{
  */
 #define TOTAL_PORTS       4U
-/**
- * @brief   Width, in bits, of an I/O port.
- */
-#if (defined(SN32F240B)|| defined(SN32F240C)|| defined(SN32F260))
-  #define PAL_IOPORTS_WIDTH 16U
-#elif (defined(SN32F280)|| defined(SN32F290))
-  #define PAL_IOPORTS_WIDTH 20U
-#endif
 
 /**
  * @brief   Whole port mask.
@@ -93,6 +85,12 @@
  * @name    Line handling macros
  * @{
  */
+#define GET_PORT_WIDTH(portid) \
+    (((uint32_t)(portid) == (uint32_t)GPIOA) ? GPIOA_WIDTH : \
+    ((uint32_t)(portid) == (uint32_t)GPIOB) ? GPIOB_WIDTH : \
+    ((uint32_t)(portid) == (uint32_t)GPIOC) ? GPIOC_WIDTH : \
+    ((uint32_t)(portid) == (uint32_t)GPIOD) ? GPIOD_WIDTH : 0U)
+
 /**
  * @brief   Forms a line identifier.
  * @details A port/pad pair are encoded into an @p ioline_t type. The encoding
@@ -356,7 +354,7 @@ typedef uint32_t iopadid_t;
  * @notapi
  */
 #define pal_lld_writegroup(port, mask, offset, bits) {                      \
-  uint32_t w = ((~(uint32_t)(bits) & (uint32_t)(mask)) << (PAL_IOPORTS_WIDTH + (offset))) | \
+  uint32_t w = ((~(uint32_t)(bits) & (uint32_t)(mask)) << (GET_PORT_WIDTH(port) + (offset))) | \
                ((uint32_t)(bits) & (uint32_t)(mask)) << (offset);           \
   (port)->DATA = w;                                                       \
 }

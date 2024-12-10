@@ -35,7 +35,7 @@ const PALConfig pal_default_config = {
   {.mode = VAL_GPIOB_MODE, .cfg = VAL_GPIOB_CFG, .cfg1 = VAL_GPIOB_CFG1},
   #endif
   #if SN32_HAS_GPIOC
-  {.mode = VAL_GPIOC_MODE, .cfg = VAL_GPIOC_CFG, .cfg1 = 0},
+  {.mode = VAL_GPIOC_MODE, .cfg = VAL_GPIOC_CFG},
   #endif
   #if SN32_HAS_GPIOD
   {.mode = VAL_GPIOD_MODE, .cfg = VAL_GPIOD_CFG, .cfg1 = VAL_GPIOD_CFG1},
@@ -52,7 +52,11 @@ extern void enter_bootloader_mode_if_requested(void);
  *          and before any other initialization.
  */
 void __early_init(void) {
-  enter_bootloader_mode_if_requested();
+  SN_FLASH->LPCTRL = 0x5AFA0031; //24 <= 48Mhz
+  SN_SYS1->AHBCLKEN_b.LCDCLKEN =1;
+  SN_SYS1->AHBCLKEN_b.WDTCLKEN =1;
+  SN_LCD->CTRL_b.VLCD=1;
+  SN_SYS1->AHBCLKEN_b.LCDCLKEN =0;
   sn32_clock_init();
 }
 
