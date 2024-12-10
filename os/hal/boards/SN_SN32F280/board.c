@@ -29,16 +29,16 @@
  */
 const PALConfig pal_default_config = {
   #if SN32_HAS_GPIOA
-  {.mode = VAL_GPIOA_MODE, .cfg = VAL_GPIOA_CFG},
+  {.mode = VAL_GPIOA_MODE, .cfg = VAL_GPIOA_CFG, .cfg1 = VAL_GPIOA_CFG1},
   #endif
   #if SN32_HAS_GPIOB
-  {.mode = VAL_GPIOB_MODE, .cfg = VAL_GPIOB_CFG},
+  {.mode = VAL_GPIOB_MODE, .cfg = VAL_GPIOB_CFG, .cfg1 = VAL_GPIOB_CFG1},
   #endif
   #if SN32_HAS_GPIOC
   {.mode = VAL_GPIOC_MODE, .cfg = VAL_GPIOC_CFG},
   #endif
   #if SN32_HAS_GPIOD
-  {.mode = VAL_GPIOD_MODE, .cfg = VAL_GPIOD_CFG},
+  {.mode = VAL_GPIOD_MODE, .cfg = VAL_GPIOD_CFG, .cfg1 = VAL_GPIOD_CFG1},
   #endif
 };
 #endif
