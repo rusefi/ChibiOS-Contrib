@@ -114,13 +114,6 @@
 #define AT32_CAN_CAN1_IRQ_PRIORITY          11
 
 /*
- * CRC driver system settings.
- */
-#define AT32_CRC_USE_CRC1                   FALSE
-#define AT32_CRC_CRC1_DMA_PRIORITY          2
-#define AT32_CRC_CRC1_IRQ_PRIORITY          1
-
-/*
  * DMA driver system settings.
  */
 #define AT32_DMA_USE_DMAMUX                 FALSE
