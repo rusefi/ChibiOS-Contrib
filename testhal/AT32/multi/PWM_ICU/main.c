@@ -77,17 +77,16 @@ int main(void) {
   chSysInit();
 
   /*
-   * Board-dependent setup code.
-   */
-  portab_setup();
-
-  /*
    * Starting PWM driver 1 and enabling the notifications.
    * GPIOA8 is programmed as PWM output (channel 1 of TMR1).
    */
   pwmStart(&PORTAB_PWM1, &pwmcfg);
   pwmEnablePeriodicNotification(&PORTAB_PWM1);
-  palSetLineMode(LINE_ARD_D7, PAL_MODE_AT32_ALTERNATE_PUSHPULL);
+
+  /*
+   * Board-dependent setup code.
+   */
+  portab_setup();
 
   /*
    * Starting ICU driver 3.
@@ -97,14 +96,11 @@ int main(void) {
   palSetLine(LINE_ARD_D12);
 
   /*
-   * GPIOC2/C3/C5 is programmed as output (board LED).
+   * Board LED is programmed as output.
    */
-  palClearLine(PORTAB_BLINK_LED1);
-  palClearLine(PORTAB_BLINK_LED2);
-  palClearLine(PORTAB_BLINK_LED3);
-  palSetLine(PORTAB_BLINK_LED1);
-  palSetLine(PORTAB_BLINK_LED2);
-  palSetLine(PORTAB_BLINK_LED3);
+  palToggleLine(PORTAB_BLINK_LED1);
+  palToggleLine(PORTAB_BLINK_LED2);
+  palToggleLine(PORTAB_BLINK_LED3);
   chThdSleepMilliseconds(1000);
 
   /*
