@@ -204,7 +204,13 @@ void _pal_lld_setpadmode(ioportid_t port,
                            iomode_t mode) {
 #if (PAL_IOPORTS_WIDTH > 16U)
   volatile uint32_t *cfg_registers[] = {&(port->CFG), &(port->CFG1)};
+  volatile uint32_t *cfg_register = cfg_registers[(pad > 15) ? 1 : 0];
+  uint32_t bit_offset = (pad % 16) * 2;
+#else
+  volatile uint32_t *cfg_register = &(port->CFG);
+  uint32_t bit_offset = pad * 2;
 #endif
+
 
   switch (mode) {
 
@@ -214,11 +220,8 @@ void _pal_lld_setpadmode(ioportid_t port,
         // disable pull up resistor
         // disable Schmitt trigger
         // keep DATA low
-#if (PAL_IOPORTS_WIDTH > 16U)
-        *cfg_registers[(pad > 15) ? 1 : 0] |= (3 << ((pad % 16) * 2));
-#else
-        port->CFG |= (3 << (pad * 2));
-#endif
+        *cfg_register &= ~(3 << bit_offset);
+        *cfg_register |= (3 << bit_offset);
         break;
 
     case PAL_MODE_INPUT:
@@ -226,22 +229,15 @@ void _pal_lld_setpadmode(ioportid_t port,
         port->MODE &= ~(1 << pad);
         // disable pull up resistor
         // enable Schmitt trigger
-#if (PAL_IOPORTS_WIDTH > 16U)
-        *cfg_registers[(pad > 15) ? 1 : 0] |= (2 << ((pad % 16) * 2));
-#else
-        port->CFG |= (2 << (pad * 2));
-#endif
+        *cfg_register &= ~(3 << bit_offset);
+        *cfg_register |= (2 << bit_offset);
         break;
 
     case PAL_MODE_INPUT_PULLUP:
         //set MODE as INPUT
         port->MODE &= ~(1 << pad);
         //enable pull up resistor
-#if (PAL_IOPORTS_WIDTH > 16U)
-        *cfg_registers[(pad > 15) ? 1 : 0] &= ~(3 << ((pad % 16) * 2));
-#else
-        port->CFG &= ~(3 << (pad * 2));
-#endif
+        *cfg_register &= ~(3 << bit_offset);
         break;
 
     case PAL_MODE_OUTPUT_PUSHPULL:
