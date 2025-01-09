@@ -108,6 +108,17 @@
 #error "Invalid DMA priority assigned to SDIO"
 #endif
 
+/* The following checks are only required when there is a DMA able to
+   reassign streams to different channels.*/
+#if AT32_ADVANCED_DMA
+
+/* Check on the presence of the DMA streams settings in mcuconf.h.*/
+#if !defined(AT32_SDC_SDIO_DMA_STREAM)
+#error "SDIO DMA streams not defined"
+#endif
+
+#endif /* AT32_ADVANCED_DMA */
+
 #if !defined(AT32_DMA_REQUIRED)
 #define AT32_DMA_REQUIRED
 #endif

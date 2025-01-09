@@ -157,6 +157,23 @@
 #error "Invalid DMA priority assigned to I2C2"
 #endif
 
+/* The following checks are only required when there is a DMA able to
+   reassign streams to different channels.*/
+#if AT32_ADVANCED_DMA
+
+/* Check on the presence of the DMA streams settings in mcuconf.h.*/
+#if AT32_I2C_USE_I2C1 && (!defined(AT32_I2C_I2C1_RX_DMA_STREAM) ||          \
+                          !defined(AT32_I2C_I2C1_TX_DMA_STREAM))
+#error "I2C1 DMA streams not defined"
+#endif
+
+#if AT32_I2C_USE_I2C2 && (!defined(AT32_I2C_I2C2_RX_DMA_STREAM) ||          \
+                          !defined(AT32_I2C_I2C2_TX_DMA_STREAM))
+#error "I2C2 DMA streams not defined"
+#endif
+
+#endif /* AT32_ADVANCED_DMA */
+
 #if !defined(AT32_DMA_REQUIRED)
 #define AT32_DMA_REQUIRED
 #endif
