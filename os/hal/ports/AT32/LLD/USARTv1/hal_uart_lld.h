@@ -261,6 +261,38 @@
 #error "Invalid DMA priority assigned to UART5"
 #endif
 
+/* The following checks are only required when there is a DMA able to
+   reassign streams to different channels.*/
+#if AT32_ADVANCED_DMA
+
+/* Check on the presence of the DMA streams settings in mcuconf.h.*/
+#if AT32_UART_USE_USART1 && (!defined(AT32_UART_USART1_RX_DMA_STREAM) ||    \
+                             !defined(AT32_UART_USART1_TX_DMA_STREAM))
+#error "USART1 DMA streams not defined"
+#endif
+
+#if AT32_UART_USE_USART2 && (!defined(AT32_UART_USART2_RX_DMA_STREAM) ||    \
+                             !defined(AT32_UART_USART2_TX_DMA_STREAM))
+#error "USART2 DMA streams not defined"
+#endif
+
+#if AT32_UART_USE_USART3 && (!defined(AT32_UART_USART3_RX_DMA_STREAM) ||    \
+                             !defined(AT32_UART_USART3_TX_DMA_STREAM))
+#error "USART3 DMA streams not defined"
+#endif
+
+#if AT32_UART_USE_UART4 && (!defined(AT32_UART_UART4_RX_DMA_STREAM) ||      \
+                            !defined(AT32_UART_UART4_TX_DMA_STREAM))
+#error "UART4 DMA streams not defined"
+#endif
+
+#if AT32_UART_USE_UART5 && (!defined(AT32_UART_UART5_RX_DMA_STREAM) ||      \
+                            !defined(AT32_UART_UART5_TX_DMA_STREAM))
+#error "UART5 DMA streams not defined"
+#endif
+
+#endif /* AT32_ADVANCED_DMA */
+
 #if !defined(AT32_DMA_REQUIRED)
 #define AT32_DMA_REQUIRED
 #endif
