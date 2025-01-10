@@ -2,8 +2,8 @@
   **************************************************************************
   * @file    at32f415cx.h
   * @author  Artery Technology & HorrorTroll & Zhaqian
-  * @version v2.1.4
-  * @date    01-February-2024
+  * @version v2.1.6
+  * @date    13-December-2024
   * @brief   AT32F415Cx header file.
   *
   **************************************************************************
@@ -42,11 +42,11 @@
 #endif
 
 /**
-  * @brief CMSIS Device version number V2.1.4
+  * @brief CMSIS Device version number V2.1.6
   */
 #define __AT32F415_LIBRARY_VERSION_MAJOR   (0x02) /*!< [31:24] major version */
 #define __AT32F415_LIBRARY_VERSION_MIDDLE  (0x01) /*!< [23:16] middle version */
-#define __AT32F415_LIBRARY_VERSION_MINOR   (0x04) /*!< [15:8]  minor version */
+#define __AT32F415_LIBRARY_VERSION_MINOR   (0x06) /*!< [15:8]  minor version */
 #define __AT32F415_LIBRARY_VERSION_RC      (0x00) /*!< [7:0]   release candidate */
 #define __AT32F415_LIBRARY_VERSION         ((__AT32F415_LIBRARY_VERSION_MAJOR  << 24)\
                                            |(__AT32F415_LIBRARY_VERSION_MIDDLE << 16)\
