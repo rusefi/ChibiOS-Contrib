@@ -151,8 +151,6 @@
 #define AT32_ICU_USE_TMR4                   FALSE
 #define AT32_ICU_USE_TMR5                   FALSE
 #define AT32_ICU_USE_TMR9                   FALSE
-#define AT32_ICU_USE_TMR10                  FALSE
-#define AT32_ICU_USE_TMR11                  FALSE
 
 /*
  * PWM driver system settings.
