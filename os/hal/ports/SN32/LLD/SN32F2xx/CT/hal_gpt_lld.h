@@ -209,9 +209,13 @@ struct GPTDriver {
  *
  * @notapi
  */
+#if (defined(SN32F280) || defined(SN32F290))
 #define gpt_lld_change_interval(gptp, interval)                             \
-  ((gptp)->ct->MR[0] = (uint32_t)((interval) - 1U))
-
+  ((gptp)->ct->MR[0] = (CT16_PWM_KEY|(((uint32_t)((interval) - 1U)) & UINT16_MAX)))
+#else
+#define gpt_lld_change_interval(gptp, interval)                             \
+  ((gptp)->ct->MR[0] = (((uint32_t)((interval) - 1U)) & UINT16_MAX))
+#endif
 /**
  * @brief   Returns the interval of GPT peripheral.
  * @pre     The GPT unit must be running in continuous mode.
@@ -221,7 +225,7 @@ struct GPTDriver {
  *
  * @notapi
  */
-#define gpt_lld_get_interval(gptp) ((gptcnt_t)((gptp)->ct->MR[0] + 1U))
+#define gpt_lld_get_interval(gptp) ((gptcnt_t)(((gptp)->ct->MR[0] & UINT16_MAX) + 1U))
 
 /**
  * @brief   Returns the counter value of GPT peripheral.

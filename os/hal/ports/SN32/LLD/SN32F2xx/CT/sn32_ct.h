@@ -39,16 +39,21 @@
 #define SN32_CT16B1       ((sn32_ct_t *)SN_CT16B1_BASE)
 #define SN32_CT16B1_MAX_CHANNELS       25
 #if defined(SN32F240)
+#   define SN32_CT16_PRE_LIMIT         UINT8_MAX
 #   define SN32_CT16B1_CHANNELS        4
 #elif (defined(SN32F240B)|| defined(SN32F240C))
+#   define SN32_CT16_PRE_LIMIT         UINT8_MAX
 #   define SN32_CT16B1_CHANNELS        25
 #elif defined(SN32F260)
+#   define SN32_CT16_PRE_LIMIT         UINT8_MAX
 #   define SN32_CT16B1_CHANNELS        24
 #elif (defined(SN32F280) || defined(SN32F290))
-#   define SN32_CT16B1_CHANNELS        12
+#   define SN32_CT16_PRE_LIMIT         UINT16_MAX
+#   define SN32_CT16B1_CHANNELS        13
 #else
 #   error "CT not supported in the selected device"
 #endif
+
 /** @} */
 
 /*===========================================================================*/
@@ -77,7 +82,7 @@ typedef struct {                                    /*!< (@ 0x40002000) SN_CT16B
     volatile uint32_t MCTRL;                        /*!< (@ 0x00000014) Offset:0x14 CT16Bn Match Control Register                  */
     volatile uint32_t MCTRL2;                       /*!< (@ 0x00000018) Offset:0x18 CT16Bn Match Control Register 2                */
     volatile uint32_t MCTRL3;                       /*!< (@ 0x0000001C) Offset:0x1C CT16Bn Match Control Register 3                */
-    volatile uint32_t MR[SN32_CT16B1_MAX_CHANNELS]; /*!< (@ 0x00000020) Offset:0x20 CT16Bn MR0 Register                            */
+    volatile uint32_t MR[SN32_CT16B1_CHANNELS];     /*!< (@ 0x00000020) Offset:0x20 CT16Bn MR0 Register                            */
 #if (SN32_CT16B1_CHANNELS != SN32_CT16B1_MAX_CHANNELS)
     volatile const uint32_t RESERVED[SN32_CT16B1_MAX_CHANNELS - SN32_CT16B1_CHANNELS];
 #endif
@@ -104,6 +109,15 @@ typedef struct {                                    /*!< (@ 0x40002000) SN_CT16B
 
 #define CT16_CRST                      1 //[1:1] CT16Bn counter reset bit
 #define mskCT16_CRST                   (CT16_CRST<<1)
+
+#define CT16_CLKSEL_HCLK               0 //[2:2] CT16Bn PCLK source
+#define CT16_CLKSEL_PLL_VCO            1
+#define CT16_CLKSEL_ILRC               2
+#define mskCT16_CLKSEL_HCLK            (CT16_CLKSEL_HCLK << 2)
+#define mskCT16_CLKSEL_PLL_VCO         (CT16_CLKSEL_PLL_VCO << 2)
+#define mskCT16_CLKSEL_ILRC            (CT16_CLKSEL_ILRC << 2)
+
+#define CT16_PWM_KEY                   (0x5A << 24)
 
 //[6:4] CT16Bn counting mode selection
 #define CT16_CM_EDGE_UP                0 // Edge-aligned Up-counting mode
