@@ -172,7 +172,7 @@
  */
 #define SN32_RTC_HANDLER          Vector9C
 #define SN32_RTC_NUMBER           RTC_IRQn
-
+#define SN32_HAS_RTC              TRUE
 /*
  * ADC unit.
  */
