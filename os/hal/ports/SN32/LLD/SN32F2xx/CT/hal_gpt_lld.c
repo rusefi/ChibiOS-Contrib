@@ -233,9 +233,9 @@ void gpt_lld_stop(GPTDriver *gptp) {
 void gpt_lld_start_timer(GPTDriver *gptp, gptcnt_t interval) {
 
 #if (defined(SN32F280) || defined(SN32F290))
-  gptp->ct->MR[0] = (CT16_PWM_KEY|(uint32_t)(interval - 1U));   /* Time constant.           */
+  gptp->ct->MR[0] = (CT16_PWM_KEY|(interval - 1U));   /* Time constant.           */
 #else
-  gptp->ct->MR[0] = (uint32_t)(interval - 1U);  /* Time constant.           */
+  gptp->ct->MR[0] = (interval - 1U);  /* Time constant.           */
 #endif
 #if SN32_GPT_USE_CT16B0
       if (&GPTD1 == gptp) {
@@ -290,10 +290,10 @@ void gpt_lld_stop_timer(GPTDriver *gptp) {
 void gpt_lld_polled_delay(GPTDriver *gptp, gptcnt_t interval) {
 
 #if (defined(SN32F280) || defined(SN32F290))
-  gptp->ct->MR[0] = (CT16_PWM_KEY|(uint32_t)(interval - 1U));   /* Time constant.           */
+  gptp->ct->MR[0] = (CT16_PWM_KEY|(interval - 1U));   /* Time constant.           */
   gptp->ct->MCTRL = (CT16_PWM_KEY|mskCT16_MRnIE_EN(0) | mskCT16_MRnSTOP_EN(0));
 #else
-  gptp->ct->MR[0] = (uint32_t)(interval - 1U);   /* Time constant.           */
+  gptp->ct->MR[0] = (interval - 1U);   /* Time constant.           */
   gptp->ct->MCTRL = (mskCT16_MRnIE_EN(0) | mskCT16_MRnSTOP_EN(0));
 #endif
   gptp->ct->IC &= 0x1FFFFFF;                   /* Clear pending IRQs.      */

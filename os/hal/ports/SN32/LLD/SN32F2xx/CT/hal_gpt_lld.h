@@ -139,7 +139,7 @@ typedef uint32_t gptfreq_t;
 /**
  * @brief   GPT counter type.
  */
-typedef uint32_t gptcnt_t;
+typedef uint16_t gptcnt_t;
 
 /**
  * @brief   Driver configuration structure.
@@ -211,10 +211,10 @@ struct GPTDriver {
  */
 #if (defined(SN32F280) || defined(SN32F290))
 #define gpt_lld_change_interval(gptp, interval)                             \
-  ((gptp)->ct->MR[0] = (CT16_PWM_KEY|(((uint32_t)((interval) - 1U)) & UINT16_MAX)))
+  ((gptp)->ct->MR[0] = (CT16_PWM_KEY|((interval) - 1U)))
 #else
 #define gpt_lld_change_interval(gptp, interval)                             \
-  ((gptp)->ct->MR[0] = (((uint32_t)((interval) - 1U)) & UINT16_MAX))
+  ((gptp)->ct->MR[0] = ((interval) - 1U))
 #endif
 /**
  * @brief   Returns the interval of GPT peripheral.
