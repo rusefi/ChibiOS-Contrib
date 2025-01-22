@@ -123,13 +123,13 @@ void adc_lld_init(void) {
  */
 void adc_lld_start(ADCDriver *adcp) {
 
-  /* If in stopped state then enables the ADC and DMA clocks.*/
+  /* If in stopped state then enables the ADC peripheral and clock.*/
   if (adcp->state == ADC_STOP) {
 #if SN32_ADC_USE_ADC1
     if (&ADCD1 == adcp) {
       sys1EnableADC();
       adcp->adc->ADM_b.ADENB = ADC_ADENB_EN;
-
+      osalThreadSleepMicroseconds(SN32_ADC_WAKEUP_DURATION);
       /* Clock settings.*/
       adcp->adc->ADM_b.ADCKS = SN32_ADC_PRESC;
     }

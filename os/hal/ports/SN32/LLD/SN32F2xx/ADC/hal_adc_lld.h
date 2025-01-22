@@ -121,6 +121,13 @@
 #define SN32_ADC_PRESCALER_VALUE           1
 #endif
 
+/**
+ * @brief   ADC wake-up procedure duration.
+ */
+#if !defined(SN32_USB_HOST_WAKEUP_DURATION) || defined(__DOXYGEN__)
+#define SN32_ADC_WAKEUP_DURATION        100
+#endif
+
 /** @} */
 
 /*===========================================================================*/
