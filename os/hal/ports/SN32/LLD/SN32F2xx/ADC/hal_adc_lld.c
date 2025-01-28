@@ -52,18 +52,13 @@ ADCDriver ADCD1;
  *
  * @param[in] adc       pointer to the ADC registers block
  */
-static void adc_lld_stop_adc(ADC_TypeDef *adc) {
+static void adc_lld_stop_adc(SN_ADC_Type *adc) {
 
   if (adc->ADM_b.EOC == ADC_EOC_BUSY) {
     adc->ADM_b.EOC = ADC_EOC_RESET;
     adc->IE = 0;
   }
   adcSN32DisableGCHS(adc);
-  /* Disabling the ADC.*/
-  adcp->adc->ADM_b.ADENB = ADC_ADENB_DIS;
-  while ((adcp->adc->ADM_b.ADENB & ADC_ADENB_EN) != 0U) {
-    /* Waiting for ADC to be disabled.*/
-  }
 }
 
 /*===========================================================================*/
@@ -85,8 +80,8 @@ OSAL_IRQ_HANDLER(SN32_ADC_HANDLER) {
 
   adc_lld_serve_interrupt(&ADCD1);
 
-#if defined(SN32_ADC_ADC_IRQ_HOOK)
-  SN32_ADC_ADC_IRQ_HOOK
+#if defined(SN32_ADC_ADC1_IRQ_HOOK)
+  SN32_ADC_ADC1_IRQ_HOOK
 #endif
 
   OSAL_IRQ_EPILOGUE();
@@ -151,6 +146,10 @@ void adc_lld_stop(ADCDriver *adcp) {
 
     /* Disabling the ADC.*/
     adc_lld_stop_adc(adcp->adc);
+    adcp->adc->ADM_b.ADENB = ADC_ADENB_DIS;
+    while ((adcp->adc->ADM_b.ADENB & ADC_ADENB_EN) != 0U) {
+    /* Waiting for ADC to be disabled.*/
+    }
 
 #if SN32_ADC_USE_ADC1
     if (&ADCD1 == adcp) {
@@ -169,9 +168,6 @@ void adc_lld_stop(ADCDriver *adcp) {
  */
 void adc_lld_start_conversion(ADCDriver *adcp) {
   const ADCConversionGroup *grpp = adcp->grpp;
-
-  /* Clear RIS register.*/
-  adcp->adc->RIS = 0;
 
   /* Apply ADC configuration.*/
   if(grpp->avrefhsel) adcSN32EnableAVREFHSEL(adcp);
@@ -192,7 +188,7 @@ void adc_lld_start_conversion(ADCDriver *adcp) {
   adcp->adc->ADM_b.CHS = adcp->current_channel;
 
   /* Enable ADC interrupt. */
-  adcp->adc->RIS = 0;
+  adcp->adc->RIS = 0U;
   adcp->adc->IE = ADC_IE_AIN(adcp->current_channel);
 
   /* ADC conversion start.*/
@@ -219,18 +215,16 @@ void adc_lld_stop_conversion(ADCDriver *adcp) {
  * @notapi
  */
 void adc_lld_serve_interrupt(ADCDriver *adcp) {
-  uint32_t ris;
-
-  ris = adcp->adc->RIS;
-  adcp->adc->RIS = 0;
 
   /* Disable Interrupt, Disable Channel */
   adcp->adc->IE = 0U;
   adcp->adc->ADM_b.CHS = 0U;
+  adcp->adc->RIS = 0U;
 
   /* Read the sample into the buffer */
   adcp->samples[adcp->current_index++] = adcp->adc->ADB;
 
+  bool more = true;
   /*  At the end of the buffer then we may be finished */
   if (adcp->current_index == adcp->number_of_samples) {
     /* We are never finished in circular mode */
@@ -254,11 +248,13 @@ void adc_lld_serve_interrupt(ADCDriver *adcp) {
     /* Skip to the next channel */
     do {
       adcp->current_channel = (adcp->current_channel + 1) & ADC_CHANNEL_MASK;
-    } while (((1 << adcp->current_channel) & adcp->grpp->channel_mask) == 0);
+    } while (((1 << adcp->current_channel) & adcp->grpp->chs) == 0);
 
     /* Enable Interrupt, Select the Channel */
     adcp->adc->ADM_b.CHS = adcp->current_channel;
     adcp->adc->IE = ADC_IE_AIN(adcp->current_channel);
+    /* Sample the next channel */
+    adcp->adc->ADM_b.ADS |= ADC_ADS_START;
   }
 }
 
@@ -299,7 +295,7 @@ void adcSN32DisableAVREFHSEL(ADCDriver *adcp) {
  *
  * @notapi
  */
-void adcSN32EnableGCHS(ADC_TypeDef *adc) {
+void adcSN32EnableGCHS(SN_ADC_Type *adc) {
   adc->ADM_b.GCHS |= ADC_GCHS_EN;
 }
 
@@ -312,7 +308,7 @@ void adcSN32EnableGCHS(ADC_TypeDef *adc) {
  *
  * @notapi
  */
-void adcSN32DisableGCHS(ADC_TypeDef *adc) {
+void adcSN32DisableGCHS(SN_ADC_Type *adc) {
   adc->ADM_b.GCHS &= ~ADC_GCHS_EN;
 }
 

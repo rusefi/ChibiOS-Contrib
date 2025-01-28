@@ -32,15 +32,6 @@
 /*===========================================================================*/
 
 /**
- * @name    Possible ADC errors mask bits.
- * @{
- */
-#define ADC_ERR_DMAFAILURE      1U  /**< DMA operations failure.            */
-#define ADC_ERR_OVERFLOW        2U  /**< ADC overflow condition.            */
-#define ADC_ERR_AWD1            4U  /**< Watchdog triggered.                */
-/** @} */
-
-/**
  * @name    ADC ADM register configuration helpers
  * @{
  */
@@ -197,7 +188,7 @@ typedef uint32_t adcerror_t;
  */
 #define adc_lld_driver_fields                                               \
   /* Pointer to the ADCx registers block.*/                                 \
-  ADC_TypeDef               *adc                                            \
+  SN_ADC_Type               *adc;                                           \
   /* @brief Number of samples expected. */                                  \
   size_t                    number_of_samples;                              \
   /* @brief Current position in the buffer. */                              \
@@ -246,8 +237,8 @@ extern "C" {
   void adc_lld_serve_interrupt(ADCDriver *adcp);
   void adcSN32EnableAVREFHSEL(ADCDriver *adcp);
   void adcSN32DisableAVREFHSEL(ADCDriver *adcp);
-  void adcSN32EnableGCHS(ADC_TypeDef *adc);
-  void adcSN32DisableGCHS(ADC_TypeDef *adc);
+  void adcSN32EnableGCHS(SN_ADC_Type *adc);
+  void adcSN32DisableGCHS(SN_ADC_Type *adc);
 #ifdef __cplusplus
 }
 #endif
