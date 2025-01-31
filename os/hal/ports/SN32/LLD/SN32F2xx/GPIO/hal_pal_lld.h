@@ -91,27 +91,29 @@
     ((uint32_t)(portid) == (uint32_t)GPIOC) ? GPIOC_WIDTH : \
     ((uint32_t)(portid) == (uint32_t)GPIOD) ? GPIOD_WIDTH : 0U)
 
+#define PAL_PAD_MASK (iopadid_t)((1U <<(PAL_IOPORTS_WIDTH / TOTAL_PORTS)) - 1)
+
 /**
  * @brief   Forms a line identifier.
  * @details A port/pad pair are encoded into an @p ioline_t type. The encoding
  *          of this type is platform-dependent.
- * @note    In this driver the pad number is encoded in the lower 4 bits of
+ * @note    In this driver the pad number is encoded in the lower PAL_PAD_MASK bits of
  *          the GPIO address which are guaranteed to be zero.
  */
 #define PAL_LINE(port, pad)                                                 \
-  ((ioline_t)((uint32_t)(port)) | ((uint32_t)(pad)))
+  ((ioline_t)((ioportmask_t)(port)) | ((iopadid_t)(pad)))
 
 /**
  * @brief   Decodes a port identifier from a line identifier.
  */
 #define PAL_PORT(line)                                                      \
-  ((ioportid_t)(((uint32_t)(line)) & 0xFFFFFFF0U))
+  ((ioportid_t)((ioline_t)(line) & ~PAL_PAD_MASK))
 
 /**
  * @brief   Decodes a pad identifier from a line identifier.
  */
 #define PAL_PAD(line)                                                       \
-  ((uint32_t)((uint32_t)(line) & 0x0000000FU))
+  ((iopadid_t)((ioline_t)(line) & PAL_PAD_MASK))
 
 /**
  * @brief   Value identifying an invalid line.
