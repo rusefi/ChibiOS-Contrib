@@ -365,13 +365,45 @@ static bool data_read10(SCSITarget *scsip, const uint8_t *cmd) {
     uint32_t n_bufs = scsip->config->blkbufsize / bs;
 
     size_t i = 0;
-    while (i < req.blk_cnt) {
-      size_t n = n_bufs > (req.blk_cnt - i) ? (req.blk_cnt - i) : n_bufs;
+    if ((n_bufs > 1) && (tr->transmit_start) && (tr->transmit_wait)) {
+      // double buffering mode
+      while (i < req.blk_cnt) {
+        size_t n = n_bufs > (req.blk_cnt - i) ? (req.blk_cnt - i) : n_bufs;
+        size_t first_n = (n + 1) / 2;
+        size_t second_n = n - first_n;
 
-      // TODO: block error handling
-      blkRead(blkdev, req.first_lba + i, buf, n);
-      tr->transmit(tr, buf, bs * n);
-      i += n;
+        // read first half of buffer
+        // TODO: block error handling
+        blkRead(blkdev, req.first_lba + i, buf, first_n);
+
+        // TODO: block error handling
+        tr->transmit_wait(tr);
+        tr->transmit_start(tr, buf, bs * first_n);
+
+        i += first_n;
+
+        if (second_n) {
+          // read second half of buffer while first are transfered over USB
+          // TODO: block error handling
+          blkRead(blkdev, req.first_lba + i, buf + bs * first_n, second_n);
+
+          // TODO: block error handling
+          tr->transmit_wait(tr);
+          tr->transmit_start(tr, buf + bs * first_n, bs * second_n);
+
+          i += second_n;
+        }
+      }
+      tr->transmit_wait(tr);
+    } else {
+      while (i < req.blk_cnt) {
+        size_t n = n_bufs > (req.blk_cnt - i) ? (req.blk_cnt - i) : n_bufs;
+
+        // TODO: block error handling
+        blkRead(blkdev, req.first_lba + i, buf, n);
+        tr->transmit(tr, buf, bs * n);
+        i += n;
+      }
     }
   }
   return SCSI_SUCCESS;
