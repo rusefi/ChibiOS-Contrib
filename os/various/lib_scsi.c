@@ -340,7 +340,7 @@ static bool data_overflow(SCSITarget *scsip, const data_request_t *req) {
 }
 
 /**
- * @brief   SCSI read/write (10) command handler.
+ * @brief   SCSI read (10) command handler.
  *
  * @param[in] scsip   pointer to @p SCSITarget structure
  * @param[in] cmd     pointer to SCSI command data
@@ -349,7 +349,77 @@ static bool data_overflow(SCSITarget *scsip, const data_request_t *req) {
  *
  * @notapi
  */
-static bool data_read_write10(SCSITarget *scsip, const uint8_t *cmd) {
+static bool data_read10(SCSITarget *scsip, const uint8_t *cmd) {
+  data_request_t req = decode_data_request(cmd);
+
+  if (data_overflow(scsip, &req)) {
+    return SCSI_FAILED;
+  }
+  else {
+    const SCSITransport *tr = scsip->config->transport;
+    BaseBlockDevice *blkdev = scsip->config->blkdev;
+    BlockDeviceInfo bdi;
+    blkGetInfo(blkdev, &bdi);
+    size_t bs = bdi.blk_size;
+    uint8_t *buf = scsip->config->blkbuf;
+    uint32_t n_bufs = scsip->config->blkbufsize / bs;
+
+    size_t i = 0;
+    if ((n_bufs > 1) && (tr->transmit_start) && (tr->transmit_wait)) {
+      // double buffering mode
+      while (i < req.blk_cnt) {
+        size_t n = n_bufs > (req.blk_cnt - i) ? (req.blk_cnt - i) : n_bufs;
+        size_t first_n = (n + 1) / 2;
+        size_t second_n = n - first_n;
+
+        // read first half of buffer
+        // TODO: block error handling
+        blkRead(blkdev, req.first_lba + i, buf, first_n);
+
+        // TODO: block error handling
+        tr->transmit_wait(tr);
+        tr->transmit_start(tr, buf, bs * first_n);
+
+        i += first_n;
+
+        if (second_n) {
+          // read second half of buffer while first are transfered over USB
+          // TODO: block error handling
+          blkRead(blkdev, req.first_lba + i, buf + bs * first_n, second_n);
+
+          // TODO: block error handling
+          tr->transmit_wait(tr);
+          tr->transmit_start(tr, buf + bs * first_n, bs * second_n);
+
+          i += second_n;
+        }
+      }
+      tr->transmit_wait(tr);
+    } else {
+      while (i < req.blk_cnt) {
+        size_t n = n_bufs > (req.blk_cnt - i) ? (req.blk_cnt - i) : n_bufs;
+
+        // TODO: block error handling
+        blkRead(blkdev, req.first_lba + i, buf, n);
+        tr->transmit(tr, buf, bs * n);
+        i += n;
+      }
+    }
+  }
+  return SCSI_SUCCESS;
+}
+
+/**
+ * @brief   SCSI write (10) command handler.
+ *
+ * @param[in] scsip   pointer to @p SCSITarget structure
+ * @param[in] cmd     pointer to SCSI command data
+ *
+ * @return            The operation status.
+ *
+ * @notapi
+ */
+static bool data_write10(SCSITarget *scsip, const uint8_t *cmd) {
 
   data_request_t req = decode_data_request(cmd);
 
@@ -369,16 +439,9 @@ static bool data_read_write10(SCSITarget *scsip, const uint8_t *cmd) {
     while (i < req.blk_cnt) {
       size_t n = n_bufs > (req.blk_cnt - i) ? (req.blk_cnt - i) : n_bufs;
 
-      if (cmd[0] == SCSI_CMD_READ_10) {
-        // TODO: block error handling
-        blkRead(blkdev, req.first_lba + i, buf, n);
-        tr->transmit(tr, buf, bs * n);
-      }
-      else {
-        // TODO: block error handling
-        tr->receive(tr, buf, bs * n);
-        blkWrite(blkdev, req.first_lba + i, buf, n);
-      }
+      // TODO: block error handling
+      tr->receive(tr, buf, bs * n);
+      blkWrite(blkdev, req.first_lba + i, buf, n);
       i += n;
     }
   }
@@ -448,12 +511,12 @@ bool scsiExecCmd(SCSITarget *scsip, const uint8_t *cmd) {
 
   case SCSI_CMD_READ_10:
     dbgprintf("SCSI_CMD_READ_10\r\n");
-    ret = data_read_write10(scsip, cmd);
+    ret = data_read10(scsip, cmd);
     break;
 
   case SCSI_CMD_WRITE_10:
     dbgprintf("SCSI_CMD_WRITE_10\r\n");
-    ret = data_read_write10(scsip, cmd);
+    ret = data_write10(scsip, cmd);
     break;
 
   case SCSI_CMD_TEST_UNIT_READY:

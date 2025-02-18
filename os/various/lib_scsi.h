@@ -187,9 +187,15 @@ typedef struct PACKED_VAR {
  */
 typedef uint32_t (*scsi_transport_transmit_t)(const SCSITransport *transport,
                                               const uint8_t *data, size_t len);
+/**
+ * @brief   Type of a SCSI transport transmit finish wait call.
+ *
+ * @param[in] usbp      pointer to the @p SCSITransport object
+ */
+typedef uint32_t (*scsi_transport_wait_transmit_t)(const SCSITransport *transport);
 
 /**
- * @brief   Type of a SCSI transport transmit call.
+ * @brief   Type of a SCSI transport receive call.
  *
  * @param[in] usbp      pointer to the @p SCSITransport object
  * @param[out] data     pointer to receive buffer
@@ -206,6 +212,14 @@ struct SCSITransport {
    * @brief   Transmit call provided by lower level driver.
    */
   scsi_transport_transmit_t     transmit;
+  /**
+   * @brief   Transmit call provided by lower level driver.
+   */
+  scsi_transport_transmit_t     transmit_start;
+  /**
+   * @brief   Transmit wait call provided by lower level driver.
+   */
+  scsi_transport_wait_transmit_t  transmit_wait;
   /**
    * @brief   Receive call provided by lower level driver.
    */
