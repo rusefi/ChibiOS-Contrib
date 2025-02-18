@@ -213,6 +213,10 @@ struct SCSITransport {
    */
   scsi_transport_transmit_t     transmit;
   /**
+   * @brief   Transmit call provided by lower level driver.
+   */
+  scsi_transport_transmit_t     transmit_start;
+  /**
    * @brief   Transmit wait call provided by lower level driver.
    */
   scsi_transport_wait_transmit_t  transmit_wait;
