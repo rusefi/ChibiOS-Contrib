@@ -2,7 +2,6 @@
     ChibiOS - Copyright (C) 2006..2020 Giovanni Di Sirio
     ChibiOS - Copyright (C) 2023..2025 HorrorTroll
     ChibiOS - Copyright (C) 2023..2025 Zhaqian
-    ChibiOS - Copyright (C) 2024..2025 Maxjta
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -190,7 +189,7 @@
 /*
  * SERIAL driver system settings.
  */
-#define AT32_SERIAL_USE_USART1              TRUE
+#define AT32_SERIAL_USE_USART1              FALSE
 #define AT32_SERIAL_USE_USART2              FALSE
 #define AT32_SERIAL_USE_USART3              FALSE
 #define AT32_SERIAL_USE_UART4               FALSE
@@ -256,12 +255,12 @@
  * USB driver system settings.
  */
 #define AT32_USB_USE_OTG1                   FALSE
-#define AT32_USB_USE_OTG2                   FALSE
+#define AT32_USB_USE_OTG2                   TRUE
 #define AT32_USB_OTG1_IRQ_PRIORITY          14
 #define AT32_USB_OTG2_IRQ_PRIORITY          14
 #define AT32_USB_OTG1_RX_FIFO_SIZE          512
 #define AT32_USB_OTG2_RX_FIFO_SIZE          1024
-#define AT32_USE_USB_OTG2_HS_DMA            FALSE
+#define AT32_USE_USB_OTG2_HS_DMA            TRUE
 
 /*
  * WDG driver system settings.

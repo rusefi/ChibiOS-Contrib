@@ -260,6 +260,7 @@
 #define AT32_USB_OTG2_IRQ_PRIORITY          14
 #define AT32_USB_OTG1_RX_FIFO_SIZE          512
 #define AT32_USB_OTG2_RX_FIFO_SIZE          1024
+#define AT32_USE_USB_OTG2_HS_DMA            FALSE
 
 /*
  * WDG driver system settings.
