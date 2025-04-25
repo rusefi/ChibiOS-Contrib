@@ -1,7 +1,8 @@
 /*
     ChibiOS - Copyright (C) 2006..2018 Giovanni Di Sirio
-    ChibiOS - Copyright (C) 2023..2024 HorrorTroll
-    ChibiOS - Copyright (C) 2023..2024 Zhaqian
+    ChibiOS - Copyright (C) 2023..2025 HorrorTroll
+    ChibiOS - Copyright (C) 2023..2025 Zhaqian
+    ChibiOS - Copyright (C) 2024..2025 Maxjta
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -109,6 +110,15 @@
  */
 #if !defined(AT32_USE_USB_OTG2_HS) || defined(__DOXYGEN__)
 #define AT32_USE_USB_OTG2_HS                TRUE
+#endif
+
+/**
+ * @brief   Enables DMA mode on OTG2.
+ * @note    The default is @p TRUE.
+ * @note    Has effect only if @p BOARD_OTG2_USES_ULPI is defined.
+ */
+#if !defined(AT32_USE_USB_OTG2_HS_DMA) || defined(__DOXYGEN__)
+#define AT32_USE_USB_OTG2_HS_DMA            FALSE
 #endif
 
 /**
@@ -243,6 +253,7 @@ typedef struct {
   uint32_t                      rx_fifo_size;
   uint32_t                      otg_ram_size;
   uint32_t                      num_endpoints;
+  uint32_t                      dma_en;
 } at32_otg_params_t;
 
 /**

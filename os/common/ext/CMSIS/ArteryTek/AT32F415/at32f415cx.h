@@ -3,7 +3,7 @@
   * @file    at32f415cx.h
   * @author  Artery Technology & HorrorTroll & Zhaqian
   * @version v2.1.6
-  * @date    13-December-2024
+  * @date    13-Dec-2024
   * @brief   AT32F415Cx header file.
   *
   **************************************************************************
