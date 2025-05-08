@@ -80,6 +80,20 @@ typedef struct {
   uint32_t TOCTRL;
 } sn32_i2c_t;
 
+
+/* I2C n Status register <I2Cn_STAT> (0x04) */
+#define mskI2C_RX_DONE               (1 << 0)
+#define mskI2C_ACK_DONE              (1 << 1)
+#define mskI2C_NACK_DONE             (1 << 2)
+#define mskI2C_STOP_DONE             (1 << 3)
+#define mskI2C_START_DONE            (1 << 4)
+#define mskI2C_MASTER_STATUS         (1 << 5)
+#define mskI2C_SLAVE_RX_MATCH        (1 << 6)
+#define mskI2C_SLAVE_TX_MATCH        (1 << 7)
+#define mskI2C_LOST_ARB              (1 << 8)
+#define mskI2C_I2C_TIMEOUT           (1 << 9)
+#define mskI2C_I2CIF_PENDING         (1 << 15)
+
 #endif /* SN32_I2C_H */
 
 /** @} */
