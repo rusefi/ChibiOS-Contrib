@@ -35,21 +35,69 @@
  * @name    CT units references
  * @{
  */
-#define SN32_CT16B0       ((sn32_ct_t *)SN_CT16B0_BASE)
-#define SN32_CT16B1       ((sn32_ct_t *)SN_CT16B1_BASE)
-#define SN32_CT16B1_MAX_CHANNELS       25
 #if defined(SN32F240)
-#   define SN32_CT16_PRE_LIMIT         UINT8_MAX
+#   define SN32_CT16_PRE_LIMIT         UINT16_MAX
+#   define SN32_CT16_TC_LIMIT          UINT16_MAX
+#   define SN32_CT32_PRE_LIMIT         UINT32_MAX
+#   define SN32_CT32_TC_LIMIT          UINT32_MAX
+#   define SN32_CT16B0_CHANNELS        4
 #   define SN32_CT16B1_CHANNELS        4
+#   define SN32_CT16B2_CHANNELS        4
+#   define SN32_CT32B0_CHANNELS        4
+#   define SN32_CT32B1_CHANNELS        4
+#   define SN32_CT32B2_CHANNELS        4
+#   define SN32_CT32_MAX_CHANNELS      4
+#   define SN32_CT16B0_MAX_CHANNELS    4
+#   define SN32_CT16B1_MAX_CHANNELS    4
+#   define SN32_CT16B2_MAX_CHANNELS    4
+#   define SN32_CT16B0                 ((sn32_ct16b0_240_t *)SN_CT16B0_BASE)
+#   define SN32_CT16B1                 ((sn32_ct16b0_240_t *)SN_CT16B1_BASE)
+#   define SN32_CT16B2                 ((sn32_ct16b0_240_t *)SN_CT16B2_BASE)
+#   define SN32_CT32B0                 ((sn32_ct32_t *)SN_CT32B0_BASE)
+#   define SN32_CT32B1                 ((sn32_ct32_t *)SN_CT32B1_BASE)
+#   define SN32_CT32B2                 ((sn32_ct32_t *)SN_CT32B2_BASE)
 #elif (defined(SN32F240B)|| defined(SN32F240C))
 #   define SN32_CT16_PRE_LIMIT         UINT8_MAX
+#   define SN32_CT16_TC_LIMIT          UINT16_MAX
+#   define SN32_CT16B0_CHANNELS        1
 #   define SN32_CT16B1_CHANNELS        25
+#   define SN32_CT16B0_MAX_CHANNELS    24
+#   define SN32_CT16B1_MAX_CHANNELS    25
+#   define SN32_CT16B0                 ((sn32_ct16b0_240b_t *)SN_CT16B0_BASE)
+#   define SN32_CT16B1                 ((sn32_ct16b1_240b_t *)SN_CT16B1_BASE)
 #elif defined(SN32F260)
 #   define SN32_CT16_PRE_LIMIT         UINT8_MAX
+#   define SN32_CT16_TC_LIMIT          UINT16_MAX
+#   define SN32_CT16B0_CHANNELS        1
 #   define SN32_CT16B1_CHANNELS        24
+#   define SN32_CT16B0_MAX_CHANNELS    24
+#   define SN32_CT16B1_MAX_CHANNELS    25
+#   define SN32_CT16B0                 ((sn32_ct16b0_240b_t *)SN_CT16B0_BASE)
+#   define SN32_CT16B1                 ((sn32_ct16b1_240b_t *)SN_CT16B1_BASE)
 #elif (defined(SN32F280) || defined(SN32F290))
 #   define SN32_CT16_PRE_LIMIT         UINT16_MAX
+#   define SN32_CT16_TC_LIMIT          UINT16_MAX
+#   define SN32_CT16B0_CHANNELS        5
 #   define SN32_CT16B1_CHANNELS        13
+#   define SN32_CT16B2_CHANNELS        5
+#   define SN32_CT16B3_CHANNELS        5
+#   define SN32_CT16B4_CHANNELS        5
+#   define SN32_CT16B5_CHANNELS        5
+#   define SN32_CT16B0_PWMN_CHANNELS   4
+#   define SN32_CT16B3_PWMN_CHANNELS   2
+#   define SN32_CT16B4_PWMN_CHANNELS   2
+#   define SN32_CT16B0_MAX_CHANNELS    25
+#   define SN32_CT16B1_MAX_CHANNELS    25
+#   define SN32_CT16B2_MAX_CHANNELS    25
+#   define SN32_CT16B3_MAX_CHANNELS    25
+#   define SN32_CT16B4_MAX_CHANNELS    25
+#   define SN32_CT16B5_MAX_CHANNELS    25
+#   define SN32_CT16B0                 ((sn32_ct16b0_290_t *)SN_CT16B0_BASE)
+#   define SN32_CT16B1                 ((sn32_ct16b1_290_t *)SN_CT16B1_BASE)
+#   define SN32_CT16B2                 ((sn32_ct16b0_240b_t *)SN_CT16B2_BASE)
+#   define SN32_CT16B3                 ((sn32_ct16b3_290_t *)SN_CT16B3_BASE)
+#   define SN32_CT16B4                 ((sn32_ct16b3_290_t *)SN_CT16B4_BASE)
+#   define SN32_CT16B5                 ((sn32_ct16b5_290_t *)SN_CT16B5_BASE)
 #else
 #   error "CT not supported in the selected device"
 #endif
@@ -73,31 +121,161 @@
  * @note    This is the most general known form, not all timers have
  *          necessarily all registers and bits.
  */
-typedef struct {                                    /*!< (@ 0x40002000) SN_CT16Bn Structure                                        */
-    volatile uint32_t TMRCTRL;                      /*!< (@ 0x00000000) Offset:0x00 CT16Bn Timer Control Register                  */
-    volatile uint32_t TC;                           /*!< (@ 0x00000004) Offset:0x04 CT16Bn Timer Counter Register                  */
-    volatile uint32_t PRE;                          /*!< (@ 0x00000008) Offset:0x08 CT16Bn Prescale Register                       */
-    volatile uint32_t PC;                           /*!< (@ 0x0000000C) Offset:0x0C CT16Bn Prescale Counter Register               */
-    volatile uint32_t CNTCTRL;                      /*!< (@ 0x00000010) Offset:0x10 CT16Bn Counter Control Register                */
-    volatile uint32_t MCTRL;                        /*!< (@ 0x00000014) Offset:0x14 CT16Bn Match Control Register                  */
-    volatile uint32_t MCTRL2;                       /*!< (@ 0x00000018) Offset:0x18 CT16Bn Match Control Register 2                */
-    volatile uint32_t MCTRL3;                       /*!< (@ 0x0000001C) Offset:0x1C CT16Bn Match Control Register 3                */
-    volatile uint32_t MR[SN32_CT16B1_CHANNELS];     /*!< (@ 0x00000020) Offset:0x20 CT16Bn MR0 Register                            */
+// Configuration registers block
+typedef struct {
+    volatile uint32_t TMRCTRL;
+    volatile uint32_t TC;
+    volatile uint32_t PRE;
+    volatile uint32_t PC;
+    volatile uint32_t CNTCTRL;
+} sn32_ct_config_t;
+
+// Match control block
+typedef struct {
+    volatile uint32_t MCTRL;
+#if !defined(SN32F240)
+    volatile uint32_t MCTRL2;
+    volatile uint32_t MCTRL3;
+#endif
+} sn32_ct_match_t;
+
+// Capture control block
+typedef struct {
+    volatile uint32_t CAPCTRL;
+    volatile uint32_t CAP0;
+} sn32_ct_capture_t;
+
+// External match control block
+typedef struct {
+    volatile uint32_t EM;
+#if !defined(SN32F240)
+    volatile uint32_t EMC;
+    volatile uint32_t EMC2;
+#endif
+} sn32_ct_em_t;
+
+// PWM control block
+typedef struct {
+    volatile uint32_t PWMCTRL;
+#if !defined(SN32F240)
+    volatile uint32_t PWMCTRL2;
+    volatile uint32_t PWMENB;
+    volatile uint32_t PWMIOENB;
+#endif
+} sn32_ct_pwm_t;
+
+// IRQ control block
+typedef struct {
+    volatile uint32_t RIS;
+    volatile uint32_t IC;
+} sn32_ct_irq_t;
+
+#if defined(SN32F240)
+typedef struct {
+    sn32_ct_config_t config;  // Configuration registers
+    sn32_ct_match_t match;    // Match control registers
+    volatile uint32_t MR[SN32_CT16B0_CHANNELS];
+    sn32_ct_capture_t cap;    // Capture registers
+    sn32_ct_em_t em;          // External match control
+    sn32_ct_pwm_t pwm;        // PWM control registers
+    sn32_ct_irq_t irq;        // IRQ control registers
+} sn32_ct16b0_240_t;
+typedef struct {
+    sn32_ct_config_t config;  // Configuration registers
+    sn32_ct_match_t match;    // Match control registers
+    volatile uint32_t MR[SN32_CT32_MAX_CHANNELS];
+    sn32_ct_capture_t cap;    // Capture registers
+    sn32_ct_em_t em;          // External match control
+    sn32_ct_pwm_t pwm;        // PWM control registers
+    sn32_ct_irq_t irq;        // IRQ control registers
+} sn32_ct32_t;
+#endif
+#if (defined(SN32F240B) || defined(SN32F240C) || defined(SN32F260) || defined(SN32F280) || defined(SN32F290))
+typedef struct {
+    sn32_ct_config_t config;  // Configuration registers
+    sn32_ct_match_t match;    // Match control registers
+    volatile uint32_t MR[SN32_CT16B0_CHANNELS];
+#if (SN32_CT16B0_CHANNELS != SN32_CT16B0_MAX_CHANNELS)
+    volatile const uint32_t RESERVED[SN32_CT16B0_MAX_CHANNELS - SN32_CT16B0_CHANNELS];
+#endif
+    sn32_ct_capture_t cap;    // Capture registers
+    sn32_ct_em_t em;          // External match control
+    sn32_ct_pwm_t pwm;        // PWM control registers
+    sn32_ct_irq_t irq;        // IRQ control registers
+} sn32_ct16b0_240b_t;
+#endif
+#if (defined(SN32F280) || defined(SN32F290))
+typedef struct {
+    sn32_ct_config_t config;  // Configuration registers
+    sn32_ct_match_t match;    // Match control registers
+    volatile uint32_t MR[SN32_CT16B0_CHANNELS];
+#if (SN32_CT16B0_CHANNELS != SN32_CT16B0_MAX_CHANNELS)
+    volatile const uint32_t RESERVED[SN32_CT16B0_MAX_CHANNELS - SN32_CT16B0_CHANNELS];
+#endif
+    sn32_ct_capture_t cap;    // Capture registers
+    sn32_ct_em_t em;          // External match control
+    sn32_ct_pwm_t pwm;        // PWM control registers
+    sn32_ct_irq_t irq;        // IRQ control registers
+    volatile uint32_t PWMmNIOCTRL;
+    volatile uint32_t PWMnNDB[SN32_CT16B0_PWMN_CHANNELS];
+} sn32_ct16b0_290_t;
+#endif
+#if (defined(SN32F240B) || defined(SN32F240C) || defined(SN32F260))
+typedef struct {
+    sn32_ct_config_t config;  // Configuration registers
+    sn32_ct_match_t match;    // Match control registers
+    volatile uint32_t MR[SN32_CT16B1_CHANNELS];
 #if (SN32_CT16B1_CHANNELS != SN32_CT16B1_MAX_CHANNELS)
     volatile const uint32_t RESERVED[SN32_CT16B1_MAX_CHANNELS - SN32_CT16B1_CHANNELS];
 #endif
-    volatile uint32_t CAP0;                         /*!< (@ 0x00000084) Offset:0x84 CT16Bn CAP0 Register                           */
-    volatile uint32_t EM;                           /*!< (@ 0x00000088) Offset:0x88 CT16Bn External Match Register                 */
-    volatile uint32_t EMC;                          /*!< (@ 0x0000008C) Offset:0x8C CT16Bn External Match Control register         */
-    volatile uint32_t EMC2;                         /*!< (@ 0x00000090) Offset:0x90 CT16Bn External Match Control register 2       */
-    volatile uint32_t PWMCTRL;                      /*!< (@ 0x00000094) Offset:0x94 CT16Bn PWM Control Register                    */
-    volatile uint32_t PWMCTRL2;                     /*!< (@ 0x00000098) Offset:0x98 CT16Bn PWM Control Register 2                  */
-    volatile uint32_t PWMENB;                       /*!< (@ 0x0000009C) Offset:0x9C CT16Bn PWM Enable register                     */
-    volatile uint32_t PWMIOENB;                     /*!< (@ 0x000000A0) Offset:0xA0 CT16Bn PWM IO Enable register                  */
-    volatile uint32_t RIS;                          /*!< (@ 0x000000A4) Offset:0xA4 CT16Bn Raw Interrupt Status Register           */
-    volatile uint32_t IC;                           /*!< (@ 0x000000A8) Offset:0xA8 CT16Bn Interrupt Clear Register                */
-} sn32_ct_t;                                        /*!< Size = 172 (0xac)                                                         */
+    volatile const uint32_t RESERVED1;
+    sn32_ct_em_t em;          // External match control
+    sn32_ct_pwm_t pwm;        // PWM control registers
+    sn32_ct_irq_t irq;        // IRQ control registers
+} sn32_ct16b1_240b_t;
+#endif
+#if (defined(SN32F280) || defined(SN32F290))
+typedef struct {
+    sn32_ct_config_t config;  // Configuration registers
+    sn32_ct_match_t match;    // Match control registers
+    volatile uint32_t MR[SN32_CT16B1_CHANNELS];
+#if (SN32_CT16B1_CHANNELS != SN32_CT16B1_MAX_CHANNELS)
+    volatile const uint32_t RESERVED[SN32_CT16B1_MAX_CHANNELS - SN32_CT16B1_CHANNELS];
+#endif
+    sn32_ct_capture_t cap;    // Capture registers
+    sn32_ct_em_t em;          // External match control
+    sn32_ct_pwm_t pwm;        // PWM control registers
+    sn32_ct_irq_t irq;        // IRQ control registers
+} sn32_ct16b1_290_t;
 
+typedef struct {
+    sn32_ct_config_t config;  // Configuration registers
+    sn32_ct_match_t match;    // Match control registers
+    volatile uint32_t MR[SN32_CT16B0_CHANNELS];
+#if (SN32_CT16B3_CHANNELS != SN32_CT16B3_MAX_CHANNELS)
+    volatile const uint32_t RESERVED[SN32_CT16B3_MAX_CHANNELS - SN32_CT16B3_CHANNELS];
+#endif
+    sn32_ct_capture_t cap;    // Capture registers
+    sn32_ct_em_t em;          // External match control
+    sn32_ct_pwm_t pwm;        // PWM control registers
+    sn32_ct_irq_t irq;        // IRQ control registers
+    volatile uint32_t PWMmNIOCTRL;
+    volatile uint32_t PWMnNDB[SN32_CT16B3_PWMN_CHANNELS];
+} sn32_ct16b3_290_t;
+
+typedef struct {
+    sn32_ct_config_t config;  // Configuration registers
+    sn32_ct_match_t match;    // Match control registers
+    volatile uint32_t MR[SN32_CT16B5_CHANNELS];
+#if (SN32_CT16B5_CHANNELS != SN32_CT16B5_MAX_CHANNELS)
+    volatile const uint32_t RESERVED[SN32_CT16B5_MAX_CHANNELS - SN32_CT16B5_CHANNELS];
+#endif
+    sn32_ct_capture_t cap;    // Capture registers
+    sn32_ct_em_t em;          // External match control
+    sn32_ct_pwm_t pwm;        // PWM control registers
+    sn32_ct_irq_t irq;        // IRQ control registers
+} sn32_ct16b5_290_t;
+#endif
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
@@ -118,6 +296,7 @@ typedef struct {                                    /*!< (@ 0x40002000) SN_CT16B
 #define mskCT16_CLKSEL_ILRC            (CT16_CLKSEL_ILRC << 2)
 
 #define CT16_PWM_KEY                   (0x5A << 24)
+#define CT16_PWM_UNLOCK(value)         ((CT16_PWM_KEY) | ((value) & 0x00FFFFFF))
 
 //[6:4] CT16Bn counting mode selection
 #define CT16_CM_EDGE_UP                0 // Edge-aligned Up-counting mode
@@ -218,6 +397,7 @@ typedef struct {                                    /*!< (@ 0x40002000) SN_CT16B
 /* The bitmask usage of iwCT16Bn_IrqEvent is the same with CT16Bn_RIS*/
 #define mskCT16_MRnIF(n)               (0x1<<n) // Interrupt flag for match channel n
 #define mskCT16_MRnIC(n)               mskCT16_MRnIF(n)
+#define mskCT_IC_Clear(n)              ((1U << (n)) - 1)
 
 #define CT16B0_ResetTimer()                                  \
   do {                                                       \

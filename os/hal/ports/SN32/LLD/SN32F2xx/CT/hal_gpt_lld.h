@@ -187,15 +187,109 @@ struct GPTDriver {
    * @brief Timer base clock.
    */
   uint32_t                  clock;
-  /**
-   * @brief Pointer to the CT registers block.
-   */
-  sn32_ct_t               *ct;
 };
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
+#if SN32_GPT_USE_CT16B0
+#define SN32_CT_GPT_SET_CT16B0(timer, field, value)        \
+  do { if ((timer) == &GPTD1) (SN32_CT16B0)->field = (value); } while (0)
+#else
+#define SN32_CT_GPT_SET_CT16B0(timer, field, value)        \
+  do { } while (0)
+#endif
+
+#if SN32_GPT_USE_CT16B1
+#define SN32_CT_GPT_SET_CT16B1(timer, field, value)        \
+  do { if ((timer) == &GPTD2) (SN32_CT16B1)->field = (value); } while (0)
+#else
+#define SN32_CT_GPT_SET_CT16B1(timer, field, value)        \
+  do { } while (0)
+#endif
+#define SN32_CT_GPT_SET(timer, field, value)         \
+  do {                                               \
+    SN32_CT_GPT_SET_CT16B0(timer, field, value);     \
+    SN32_CT_GPT_SET_CT16B1(timer, field, value);     \
+  } while (0)
+
+#if SN32_GPT_USE_CT16B0
+#define SN32_CT_GPT_OR_CT16B0(timer, field, value)        \
+  do { if ((timer) == &GPTD1) (SN32_CT16B0)->field |= (value); } while (0)
+#else
+#define SN32_CT_GPT_OR_CT16B0(timer, field, value)        \
+  do { } while (0)
+#endif
+
+#if SN32_GPT_USE_CT16B1
+#define SN32_CT_GPT_OR_CT16B1(timer, field, value)        \
+  do { if ((timer) == &GPTD2) (SN32_CT16B1)->field |= (value); } while (0)
+#else
+#define SN32_CT_GPT_OR_CT16B1(timer, field, value)        \
+  do { } while (0)
+#endif
+#define SN32_CT_GPT_OR(timer, field, value)         \
+  do {                                              \
+    SN32_CT_GPT_OR_CT16B0(timer, field, value);     \
+    SN32_CT_GPT_OR_CT16B1(timer, field, value);     \
+  } while (0)
+
+#if SN32_GPT_USE_CT16B0
+#define SN32_CT_GPT_AND_CT16B0(timer, field, value)        \
+  do { if ((timer) == &GPTD1) (SN32_CT16B0)->field &= (value); } while (0)
+#else
+#define SN32_CT_GPT_AND_CT16B0(timer, field, value)        \
+  do { } while (0)
+#endif
+
+#if SN32_GPT_USE_CT16B1
+#define SN32_CT_GPT_AND_CT16B1(timer, field, value)        \
+  do { if ((timer) == &GPTD2) (SN32_CT16B1)->field &= (value); } while (0)
+#else
+#define SN32_CT_GPT_AND_CT16B1(timer, field, value)        \
+  do { } while (0)
+#endif
+#define SN32_CT_GPT_AND(timer, field, value)         \
+  do {                                              \
+    SN32_CT_GPT_AND_CT16B0(timer, field, value);     \
+    SN32_CT_GPT_AND_CT16B1(timer, field, value);     \
+  } while (0)
+
+#if SN32_GPT_USE_CT16B0
+#define SN32_CT_GPT_GET_CT16B0(timer, field) \
+  ((timer) == &GPTD1 ? (SN32_CT16B0)->field : 0)
+#else
+#define SN32_CT_GPT_GET_CT16B0(timer, field) (0)
+#endif
+
+#if SN32_GPT_USE_CT16B1
+#define SN32_CT_GPT_GET_CT16B1(timer, field) \
+  ((timer) == &GPTD2 ? (SN32_CT16B1)->field : 0)
+#else
+#define SN32_CT_GPT_GET_CT16B1(timer, field) (0)
+#endif
+
+#define SN32_CT_GPT_GET(timer, field) \
+  (SN32_CT_GPT_GET_CT16B0(timer, field) | SN32_CT_GPT_GET_CT16B1(timer, field))
+
+#if SN32_GPT_USE_CT16B0
+#define SN32_CT_GPT_GET_ADDR_CT16B0(timer, field) \
+  ((timer) == &GPTD1 ? &((SN32_CT16B0)->field) : NULL)
+#else
+#define SN32_CT_GPT_GET_ADDR_CT16B0(timer, field) (NULL)
+#endif
+
+#if SN32_GPT_USE_CT16B1
+#define SN32_CT_GPT_GET_ADDR_CT16B1(timer, field) \
+  ((timer) == &GPTD2 ? &((SN32_CT16B1)->field) : NULL)
+#else
+#define SN32_CT_GPT_GET_ADDR_CT16B1(timer, field) (NULL)
+#endif
+
+#define SN32_CT_GPT_GET_ADDR(timer, field) \
+  (SN32_CT_GPT_GET_ADDR_CT16B0(timer, field) ? \
+   SN32_CT_GPT_GET_ADDR_CT16B0(timer, field) : \
+   SN32_CT_GPT_GET_ADDR_CT16B1(timer, field))
 
 /**
  * @brief   Changes the interval of GPT peripheral.
@@ -209,12 +303,12 @@ struct GPTDriver {
  *
  * @notapi
  */
-#if (defined(SN32F280) || defined(SN32F290))
+#if (defined(SN32F280) || defined(SN32F290) && defined(SN32_GPT_USE_CT16B0))
 #define gpt_lld_change_interval(gptp, interval)                             \
-  ((gptp)->ct->MR[0] = (CT16_PWM_KEY|((interval) - 1U)))
+  SN32_CT_GPT_SET((gptp), MR[0], CT16_PWM_UNLOCK((interval) - 1U))
 #else
 #define gpt_lld_change_interval(gptp, interval)                             \
-  ((gptp)->ct->MR[0] = ((interval) - 1U))
+  SN32_CT_GPT_SET((gptp), MR[0], ((interval) - 1U))
 #endif
 /**
  * @brief   Returns the interval of GPT peripheral.
@@ -225,7 +319,7 @@ struct GPTDriver {
  *
  * @notapi
  */
-#define gpt_lld_get_interval(gptp) ((gptcnt_t)(((gptp)->ct->MR[0] & UINT16_MAX) + 1U))
+#define gpt_lld_get_interval(gptp) (gptcnt_t)(SN32_CT_GPT_GET((gptp), MR[0] & SN32_CT16_TC_LIMIT) + 1U)
 
 /**
  * @brief   Returns the counter value of GPT peripheral.
@@ -238,7 +332,7 @@ struct GPTDriver {
  *
  * @notapi
  */
-#define gpt_lld_get_counter(gptp) ((gptcnt_t)(gptp)->ct->TC)
+#define gpt_lld_get_counter(gptp) (gptcnt_t)SN32_CT_GPT_GET((gptp), config.TC)
 
 /*===========================================================================*/
 /* External declarations.                                                    */

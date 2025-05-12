@@ -133,7 +133,7 @@ extern "C" {
  * @notapi
  */
 static inline systime_t st_lld_get_counter(void) {
-  return (systime_t)(SN32_ST_TIM->TC & UINT16_MAX);
+  return (systime_t)(SN32_ST_TIM->config.TC & UINT16_MAX);
 }
 
 /**
@@ -149,14 +149,14 @@ static inline void st_lld_start_alarm(systime_t abstime) {
 
   /* The requested delay in OSAL_ST_FREQUENCY ticks, decreased by 1 to bring it
    * into the 0...0xFFFF range instead of 1...0x10000. */
-  uint32_t delay = ((uint32_t)abstime - SN32_ST_TIM->TC - 1U) & UINT16_MAX;
+  uint32_t delay = ((uint32_t)abstime - SN32_ST_TIM->config.TC - 1U) & SN32_CT16_TC_LIMIT;
 
   /* The conversion factor between the SN32_ST_TIM and SysTick clock
    * frequencies (SN32_HCLK / OSAL_ST_FREQUENCY).
    * TODO: Actually use (SN32_HCLK / OSAL_ST_FREQUENCY) instead of reading the
    * value from a hardware register (this requires making SN32_HCLK a compile
    * time constant). */
-  uint32_t prescale = (SN32_ST_TIM->PRE & SN32_CT16_PRE_LIMIT) + 1;
+  uint32_t prescale = (SN32_ST_TIM->config.PRE & UINT8_MAX) + 1;
 
   /* The requested delay in the SysTick clock ticks.  The maximum possible
    * value with prescale=256 is 0xFFFFFF, which just fits into the 24-bit
@@ -175,10 +175,10 @@ static inline void st_lld_start_alarm(systime_t abstime) {
 
   /* Save the alarm time in a timer register.  This is needed only to make
    * st_lld_get_alarm() work. */
-#if (defined(SN32F280) || defined(SN32F290))
-  SN32_ST_TIM->MR[0] = (CT16_PWM_KEY|((uint32_t)abstime & UINT16_MAX));
+#if ((defined(SN32F280) || defined(SN32F290)) && SN32_ST_USE_TIMER == SN32_TIM_CT16B0)
+  SN32_ST_TIM->MR[0] = CT16_PWM_UNLOCK(((uint32_t)abstime & SN32_CT16_TC_LIMIT));
 #else
-  SN32_ST_TIM->MR[0] = ((uint32_t)abstime & UINT16_MAX);
+  SN32_ST_TIM->MR[0] = ((uint32_t)abstime & SN32_CT16_TC_LIMIT);
 #endif
 }
 
@@ -212,7 +212,7 @@ static inline void st_lld_set_alarm(systime_t abstime) {
  * @notapi
  */
 static inline systime_t st_lld_get_alarm(void) {
-  return (systime_t)(SN32_ST_TIM->MR[0] & UINT16_MAX);
+  return (systime_t)(SN32_ST_TIM->MR[0] & SN32_CT16_TC_LIMIT);
 }
 
 /**

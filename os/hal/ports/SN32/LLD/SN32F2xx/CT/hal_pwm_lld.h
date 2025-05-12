@@ -38,7 +38,6 @@
  */
 #define PWM_CHANNELS                 (SN32_CT16B1_CHANNELS - 1)
 #define MCTRL_INDEX                  (PWM_CHANNELS / 10)
-
 /** @} */
 
 /*===========================================================================*/
@@ -209,15 +208,69 @@ struct PWMDriver {
    * @brief Timer base clock.
    */
   uint32_t                  clock;
-  /**
-   * @brief Pointer to the CT registers block.
-   */
-  sn32_ct_t               *ct;
 };
 
 /*===========================================================================*/
 /* Driver macros.                                                            */
 /*===========================================================================*/
+#if SN32_PWM_USE_CT16B1
+#define SN32_CT_PWM_SET_CT16B1(timer, field, value)       \
+  do { if ((timer) == &PWMD1) (SN32_CT16B1)->field = (value); } while (0)
+#else
+#define SN32_CT_PWM_SET_CT16B1(timer, field, value)       \
+  do { } while (0)
+#endif
+
+#define SN32_CT_PWM_SET(timer, field, value)        \
+  do {                                               \
+    SN32_CT_PWM_SET_CT16B1(timer, field, value);     \
+  } while (0)
+
+#if SN32_PWM_USE_CT16B1
+#define SN32_CT_PWM_OR_CT16B1(timer, field, value)        \
+  do { if ((timer) == &PWMD1) (SN32_CT16B1)->field |= (value); } while (0)
+#else
+#define SN32_CT_PWM_OR_CT16B1(timer, field, value)        \
+  do { } while (0)
+#endif
+
+#define SN32_CT_PWM_OR(timer, field, value)         \
+  do {                                              \
+    SN32_CT_PWM_OR_CT16B1(timer, field, value);     \
+  } while (0)
+
+#if SN32_PWM_USE_CT16B1
+#define SN32_CT_PWM_AND_CT16B1(timer, field, value)        \
+  do { if ((timer) == &PWMD1) (SN32_CT16B1)->field &= (value); } while (0)
+#else
+#define SN32_CT_PWM_AND_CT16B1(timer, field, value)        \
+  do { } while (0)
+#endif
+
+#define SN32_CT_PWM_AND(timer, field, value)         \
+  do {                                              \
+    SN32_CT_PWM_AND_CT16B1(timer, field, value);     \
+  } while (0)
+
+#if SN32_PWM_USE_CT16B1
+#define SN32_CT_PWM_GET_CT16B1(timer, cmd) \
+  ((timer) == &PWMD1 ? (SN32_CT16B1)->cmd : 0)
+#else
+#define SN32_CT_PWM_GET_CT16B1(timer, cmd) (0)
+#endif
+
+#define SN32_CT_PWM_GET(timer, cmd) \
+  (SN32_CT_PWM_GET_CT16B1(timer, cmd))
+
+#if SN32_PWM_USE_CT16B1
+#define SN32_CT_PWM_GET_ADDR_CT16B1(timer, cmd) \
+  ((timer) == &PWMD1 ? &(SN32_CT16B1)->cmd : NULL)
+#else
+#define SN32_CT_PWM_GET_ADDR_CT16B1(timer, cmd) (NULL)
+#endif
+
+#define SN32_CT_PWM_GET_ADDR(timer, cmd) \
+  (SN32_CT_PWM_GET_ADDR_CT16B1(timer, cmd))
 
 /**
  * @brief   Changes the period of the PWM peripheral.
@@ -236,7 +289,7 @@ struct PWMDriver {
  * @notapi
  */
 #define pwm_lld_change_period(pwmp, period)                                 \
-  ((pwmp)->ct->MR[PWM_CHANNELS] = ((period) - 1))
+  SN32_CT_PWM_SET((pwmp), MR[PWM_CHANNELS], ((period) - 1))
 
 /**
  * @brief   Changes the timer counter of the PWM peripheral.
@@ -252,7 +305,7 @@ struct PWMDriver {
  * @notapi
  */
 #define pwm_lld_change_counter(pwmp, counter)                                 \
-  ((pwmp)->ct->TC = (counter))
+  SN32_CT_PWM_SET((pwmp), config.TC, (counter))
 /*===========================================================================*/
 /* External declarations.                                                    */
 /*===========================================================================*/
