@@ -5,7 +5,7 @@ PLATFORMSRC_CONTRIB := $(CHIBIOS)/os/hal/ports/common/ARMCMx/nvic.c \
 
 # Required include directories.
 PLATFORMINC_CONTRIB := $(CHIBIOS)/os/hal/ports/common/ARMCMx \
-               ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F24x \
+               ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F2xx \
                $(CHIBIOS_CONTRIB)/os/hal/ports/SN32/SN32F240
 
 ifeq ($(USE_SMART_BUILD),yes)
@@ -22,7 +22,8 @@ endif
 # Drivers compatible with the platform.
 include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F2xx/GPIO/driver.mk
 include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F2xx/USB/driver.mk
-include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F24x/CT/driver.mk
+include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F2xx/CT/driver.mk
+include ${CHIBIOS_CONTRIB}/os/hal/ports/SN32/LLD/SN32F2xx/SysTick/driver.mk
 
 # Shared variables
 ALLCSRC += $(PLATFORMSRC_CONTRIB)

@@ -200,7 +200,7 @@ typedef uint32_t ioline_t;
  *          any assumption about it, use the provided macros when populating
  *          variables of this type.
  */
-#if (defined(SN32F240B)|| defined(SN32F240C)|| defined(SN32F260))
+#if (defined(SN32F240) || defined(SN32F240B)|| defined(SN32F240C)|| defined(SN32F260))
   typedef SN_GPIO0_Type * ioportid_t;
 #elif (defined(SN32F280)|| defined(SN32F290))
   typedef SN_GPIO1_Type * ioportid_t;
