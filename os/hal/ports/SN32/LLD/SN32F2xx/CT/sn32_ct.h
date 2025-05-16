@@ -35,6 +35,25 @@
  * @name    CT units references
  * @{
  */
+#if !defined(SN32_HAS_CT16B0)
+#   define SN32_HAS_CT16B0                      FALSE
+#endif
+#if !defined(SN32_HAS_CT16B1)
+#   define SN32_HAS_CT16B1                      FALSE
+#endif
+#if !defined(SN32_HAS_CT16B2)
+#   define SN32_HAS_CT16B2                      FALSE
+#endif
+#if !defined(SN32_HAS_CT16B3)
+#   define SN32_HAS_CT16B3                      FALSE
+#endif
+#if !defined(SN32_HAS_CT16B4)
+#   define SN32_HAS_CT16B4                      FALSE
+#endif
+#if !defined(SN32_HAS_CT16B5)
+#   define SN32_HAS_CT16B5                      FALSE
+#endif
+
 #if defined(SN32F240)
 #   define SN32_CT16_PRE_LIMIT         UINT16_MAX
 #   define SN32_CT16_TC_LIMIT          UINT16_MAX
@@ -399,16 +418,30 @@ typedef struct {
 #define mskCT16_MRnIC(n)               mskCT16_MRnIF(n)
 #define mskCT_IC_Clear(n)              ((1U << (n)) - 1)
 
-#define CT16B0_ResetTimer()                                  \
+#define SN32_CT_ResetTimer(timer)                            \
   do {                                                       \
-      SN_CT16B0->TMRCTRL = (mskCT16_CRST);                   \
-      while (SN_CT16B0->TMRCTRL & mskCT16_CRST);             \
+      timer->config.TMRCTRL = (mskCT16_CRST);                \
+      while (timer->config.TMRCTRL & mskCT16_CRST);          \
   } while (0)
-#define CT16B1_ResetTimer()                                  \
-  do {                                                       \
-      SN_CT16B1->TMRCTRL = (mskCT16_CRST);                   \
-      while (SN_CT16B1->TMRCTRL & mskCT16_CRST);             \
-  } while (0)
+
+#if defined(SN32_HAS_CT16B0)
+#   define CT16B0_ResetTimer()     SN32_CT_ResetTimer(SN32_CT16B0)
+#endif
+#if defined(SN32_HAS_CT16B1)
+#   define CT16B1_ResetTimer()     SN32_CT_ResetTimer(SN32_CT16B1)
+#endif
+#if defined(SN32_HAS_CT16B2)
+#   define CT16B2_ResetTimer()     SN32_CT_ResetTimer(SN32_CT16B2)
+#endif
+#if defined(SN32_HAS_CT16B3)
+#   define CT16B3_ResetTimer()     SN32_CT_ResetTimer(SN32_CT16B3)
+#endif
+#if defined(SN32_HAS_CT16B4)
+#   define CT16B4_ResetTimer()     SN32_CT_ResetTimer(SN32_CT16B4)
+#endif
+#if defined(SN32_HAS_CT16B5)
+#   define CT16B5_ResetTimer()     SN32_CT_ResetTimer(SN32_CT16B5)
+#endif
 
 /*===========================================================================*/
 /* External declarations.                                                    */

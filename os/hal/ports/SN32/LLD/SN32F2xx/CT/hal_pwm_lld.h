@@ -69,10 +69,6 @@
 /* Configuration checks.                                                     */
 /*===========================================================================*/
 
-#if !defined(SN32_HAS_CT16B1)
-#define SN32_HAS_CT16B1                      FALSE
-#endif
-
 #if SN32_PWM_USE_CT16B1 && !SN32_HAS_CT16B1
 #error "CT16B1 not present in the selected device"
 #endif
