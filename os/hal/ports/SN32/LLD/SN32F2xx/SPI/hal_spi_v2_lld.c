@@ -58,8 +58,8 @@ SPIDriver SPID1;
 
 static void spi_lld_configure(SPIDriver *spip) {
   spip->spi->CTRL0 = spip->config->ctrl0;
-  spip->spi->CTRL1 = spip->config->ctrl1;
-  spip->spi->CLKDIV = spip->config->clkdiv;
+  spip->spi->CTRL1 = (uint32_t)spip->config->ctrl1;
+  spip->spi->CLKDIV = (uint32_t)spip->config->clkdiv;
 
   spip->spi->CTRL0 |= (spip->config->slave << 3);
   spip->spi->CTRL0_b.SDODIS = false;
