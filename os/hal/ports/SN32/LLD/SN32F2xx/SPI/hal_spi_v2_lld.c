@@ -63,11 +63,7 @@ static void spi_lld_configure(SPIDriver *spip) {
 
   spip->spi->CTRL0 |= (spip->config->slave << 3);
   spip->spi->CTRL0_b.SDODIS = false;
-
-#if SPI_SELECT_MODE == SPI_SELECT_MODE_LLD
-  // Use hardware Auto-SEL
-  spip->spi->CTRL0_b.SELDIS = false;
-#endif
+  spip->spi->CTRL0_b.SELDIS = SPI_SELECT_MODE != SPI_SELECT_MODE_LLD;
 
   uint32_t sn32_spi_clock = (SN32_HCLK / ((2 * spip->config->clkdiv) + 2));
   if (sn32_spi_clock > 6000000) {
