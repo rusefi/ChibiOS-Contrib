@@ -128,7 +128,7 @@ static void sdram_lld_init_sequence(const SDRAMConfig *cfgp) {
   /* Step 6.2: Send the second command.*/
 #if !defined(STM32H743xx)
   sdram_lld_wait_ready();
-#endif;
+#endif
   SDRAMD1.sdram->SDCMR = FMCCM_AUTO_REFRESH | command_target |
       (cfgp->sdcmr & FMC_SDCMR_NRFS);
 

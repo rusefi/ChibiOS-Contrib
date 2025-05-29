@@ -809,8 +809,11 @@ void ltdcEnableDitheringI(LTDCDriver *ltdcp) {
   osalDbgCheckClassI();
   osalDbgCheck(ltdcp == &LTDCD1);
   (void)ltdcp;
-
+#if defined(STM32H743xx)
+  LTDC->GCR |= LTDC_GCR_DEN;
+#else
   LTDC->GCR |= LTDC_GCR_DTEN;
+#endif
 }
 
 /**
