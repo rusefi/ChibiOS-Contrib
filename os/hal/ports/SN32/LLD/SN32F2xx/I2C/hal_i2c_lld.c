@@ -450,10 +450,10 @@ msg_t i2c_lld_match_address(I2CDriver *i2cp, i2caddr_t addr) {
 
   I2C_TypeDef *dp = i2cp->i2c;
   uint16_t i2cadr = addr << 1;
-  uint16_t ownAdr = dp->SLVADRR0 & (0x7f<<1);
+  uint16_t ownAdr = dp->SLVADDR0 & (0x7f<<1);
 
   if (ownAdr == 0 || ownAdr == i2cadr)
-    dp->SLVADRR0 = i2cadr;
+    dp->SLVADDR0 = i2cadr;
   else
   /* cannot add this address to set of those matched */
     return MSG_RESET;
