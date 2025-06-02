@@ -280,7 +280,7 @@ void i2c_lld_start(I2CDriver *i2cp) {
 
 #if SN32_I2C_USE_I2C1 == TRUE
     if (&I2CD1 == i2cp) {
-      sys1EnableI2C0();
+      sys1EnableI2C1();
       nvicClearPending(SN32_I2C1_GLOBAL_NUMBER);
       nvicEnableVector(SN32_I2C1_GLOBAL_NUMBER, SN32_I2C_I2C1_IRQ_PRIORITY);
     }
