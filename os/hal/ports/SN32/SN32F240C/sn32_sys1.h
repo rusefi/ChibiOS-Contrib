@@ -293,14 +293,14 @@
  *
  * @api
  */
-#define sys1EnableI2C0() sys1EnableAHB(0x1<<20)
+#define sys1EnableI2C0() sys1EnableAHB(0x1<<21)
 
 /**
  * @brief   Disables the I2C0 peripheral clock.
  *
  * @api
  */
-#define sys1DisableI2C0() sys1DisableAHB(0x1<<20)
+#define sys1DisableI2C0() sys1DisableAHB(0x1<<21)
 
 /**
  * @name    I2C1 peripherals specific SYS1 operations
@@ -311,14 +311,14 @@
  *
  * @api
  */
-#define sys1EnableI2C1() sys1EnableAHB(0x1<<21)
+#define sys1EnableI2C1() sys1EnableAHB(0x1<<20)
 
 /**
  * @brief   Disables the I2C1 peripheral clock.
  *
  * @api
  */
-#define sys1DisableI2C1() sys1DisableAHB(0x1<<21)
+#define sys1DisableI2C1() sys1DisableAHB(0x1<<20)
 
 /**
  * @name    WDT peripherals specific SYS1 operations
